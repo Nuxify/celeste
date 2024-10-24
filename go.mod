@@ -1,4 +1,4 @@
-module gomora
+module celeste
 
 go 1.21
 

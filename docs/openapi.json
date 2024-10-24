@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "Gomora API",
-    "description": "A progressive framework-agnostic API template following CLEAN architecture and SOLID principles. DDD inspired :)",
-    "termsOfService": "https://github.com/Nuxify/gomora",
+    "title": "Celeste API",
+    "description": "Celeste API Documentation",
+    "termsOfService": "https://github.com/Nuxify/celeste",
     "contact": {
       "name": "Nuxify Inc.",
       "email": "hello@nuxify.tech"
@@ -12,11 +12,11 @@
   },
   "servers": [
     {
-      "url": "https://gomora-api.nuxify.tech/v1",
+      "url": "https://celeste-api.nuxify.tech/v1",
       "description": "Production"
     },
     {
-      "url": "https://staging-gomora-api.nuxify.tech/v1",
+      "url": "https://staging-celeste-api.nuxify.tech/v1",
       "description": "Staging"
     },
     {
@@ -26,22 +26,26 @@
   ],
   "tags": [
     {
-      "name": "record",
-      "description": "Record service"
+      "name": "iam",
+      "description": "IAM service"
+    },
+    {
+      "name": "user",
+      "description": "User service"
     }
   ],
   "paths": {
-    "/record": {
+    "/user": {
       "post": {
-        "tags": ["record"],
-        "summary": "Create Record",
-        "description": "Creates a record",
+        "tags": ["user"],
+        "summary": "Create User",
+        "description": "Creates a user",
         "requestBody": {
-          "description": "Creates a record request",
+          "description": "Creates a user request",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateRecordRequest"
+                "$ref": "#/components/schemas/CreateUserRequest"
               }
             }
           },
@@ -60,16 +64,16 @@
         }
       }
     },
-    "/record/{id}": {
+    "/user/{id}": {
       "get": {
-        "tags": ["record"],
-        "summary": "Get Record By ID",
-        "description": "Get record by its id",
+        "tags": ["user"],
+        "summary": "Get User By ID",
+        "description": "Get user by its id",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Record id",
+            "description": "User id",
             "required": true,
             "schema": {
               "type": "string"
@@ -92,7 +96,7 @@
   },
   "components": {
     "schemas": {
-      "CreateRecordRequest": {
+      "CreateUserRequest": {
         "required": ["id", "data"],
         "type": "object",
         "properties": {

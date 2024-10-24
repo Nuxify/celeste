@@ -1,5 +1,5 @@
 services:
-  gomora:
+  celeste:
     build: .
     container_name: ${API_NAME}
     mem_limit: "3g"

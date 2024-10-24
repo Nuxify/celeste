@@ -21,9 +21,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	"gomora/interfaces"
-	"gomora/interfaces/http/rest/middlewares/cors"
-	"gomora/interfaces/http/rest/viewmodels"
+	"celeste/interfaces/http/rest/middlewares/cors"
+	"celeste/interfaces/http/rest/viewmodels"
 )
 
 // ChiRouterInterface declares methods for the chi router
@@ -42,8 +41,8 @@ var (
 // InitRouter initializes main routes
 func (router *router) InitRouter() *chi.Mux {
 	// DI assignment
-	recordCommandController := interfaces.ServiceContainer().RegisterRecordRESTCommandController()
-	recordQueryController := interfaces.ServiceContainer().RegisterRecordRESTQueryController()
+	// iamCommandController := interfaces.ServiceContainer().RegisterIAMRESTCommandController()
+	// iamQueryController := interfaces.ServiceContainer().RegisterIAMRESTQueryController()
 
 	// create router
 	r := chi.NewRouter()
@@ -81,11 +80,6 @@ func (router *router) InitRouter() *chi.Mux {
 	// API routes
 	r.Group(func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
-			// record module
-			r.Route("/record", func(r chi.Router) {
-				r.Post("/", recordCommandController.CreateRecord)
-				r.Get("/{id}", recordQueryController.GetRecordByID)
-			})
 		})
 	})
 

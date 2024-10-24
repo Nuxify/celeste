@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 
-	"gomora/infrastructures/database/mysql/types"
+	"celeste/infrastructures/database/mysql/types"
 )
 
 // MySQLDBHandler handles mysql operations
