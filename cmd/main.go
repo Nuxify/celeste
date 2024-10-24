@@ -17,8 +17,8 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"gomora/interfaces/http/grpc"
-	"gomora/interfaces/http/rest"
+	"celeste/interfaces/http/grpc"
+	"celeste/interfaces/http/rest"
 )
 
 func init() {

@@ -17,13 +17,13 @@ lint:
 .PHONY:	build
 build:
 	mkdir -p bin
-	go build -o bin/gomora \
+	go build -o bin/celeste \
 	    cmd/main.go
 
 .PHONY:	build-dev
 build-dev:
 	mkdir -p bin
-	go build -race -o bin/gomora \
+	go build -race -o bin/celeste \
 	    cmd/main.go
 
 .PHONY:	test
@@ -32,11 +32,11 @@ test:
 	
 .PHONY:	run
 run:	build
-	./bin/gomora
+	./bin/celeste
 
 .PHONY:	run-dev
 run-dev:	build-dev
-	./bin/gomora
+	./bin/celeste
 
 .PHONY: up
 up:

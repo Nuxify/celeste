@@ -7,9 +7,6 @@ import (
 	"sync"
 
 	"google.golang.org/grpc"
-
-	"gomora/interfaces"
-	recordGRPCPB "gomora/module/record/interfaces/http/grpc/pb"
 )
 
 // GRPCServerInterface holds the implementable method for the grpc server interface
@@ -34,11 +31,11 @@ func (s *server) Serve(port int) {
 	// create grpc server
 	grpcServer := grpc.NewServer()
 
-	recordCommandServer := interfaces.ServiceContainer().RegisterRecordGRPCCommandController()
-	recordQueryServer := interfaces.ServiceContainer().RegisterRecordGRPCQueryController()
+	//recordCommandServer := interfaces.ServiceContainer().RegisterRecordGRPCCommandController()
+	//recordQueryServer := interfaces.ServiceContainer().RegisterRecordGRPCQueryController()
 
-	recordGRPCPB.RegisterRecordCommandServiceServer(grpcServer, &recordCommandServer)
-	recordGRPCPB.RegisterRecordQueryServiceServer(grpcServer, &recordQueryServer)
+	//recordGRPCPB.RegisterRecordCommandServiceServer(grpcServer, &recordCommandServer)
+	//recordGRPCPB.RegisterRecordQueryServiceServer(grpcServer, &recordQueryServer)
 
 	log.Printf("[SERVER] gRPC server running on :%d", port)
 	if err := grpcServer.Serve(lis); err != nil {
