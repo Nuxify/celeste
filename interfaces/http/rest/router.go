@@ -18,8 +18,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
 	"celeste/interfaces/http/rest/middlewares/cors"
 	"celeste/interfaces/http/rest/viewmodels"
