@@ -7,20 +7,40 @@ import (
 var (
 	Validate         *validator.Validate = validator.New(validator.WithRequiredStructEnabled())
 	ValidationErrors map[string]string   = map[string]string{
-		"CreateUserRequest.ID":   "ID field is required.",
-		"CreateUserRequest.Data": "Data field is required.",
+		"CreateUserRequest.Email":            "Email field is required.",
+		"CreateUserRequest.Name":             "Name field is required.",
+		"UpdateUserRequest.Name":             "Name field is required.",
+		"UpdateUserPasswordRequest.Password": "Password field is required.",
 	}
 )
 
-// CreateUserRequest request struct for create user
 type CreateUserRequest struct {
-	ID   string `json:"id" validate:"required"`
-	Data string `json:"data" validate:"required"`
+	Email string `json:"email" validate:"required"`
+	Name  string `json:"name" validate:"required"`
 }
 
-// UserResponse response struct
-type UserResponse struct {
-	ID        string `json:"id"`
-	Data      string `json:"data"`
-	CreatedAt int64  `json:"createdAt"`
+type UpdateUserRequest struct {
+	Name string `json:"name" validate:"required"`
+}
+
+type UpdateUserPasswordRequest struct {
+	Password string `json:"password" validate:"required"`
+}
+
+type GetUserResponse struct {
+	WalletAddress   string  `json:"wallet_address"`
+	Email           string  `json:"email"`
+	Name            string  `json:"name"`
+	EmailVerifiedAt *uint64 `json:"email_verified_at"`
+	CreatedAt       uint64  `json:"created_at"`
+	UpdatedAt       uint64  `json:"updated_at"`
+}
+
+type GetPaginatedUserResponse struct {
+	Users      []GetUserResponse `json:"users"`
+	TotalCount uint              `json:"total_count"`
+}
+
+type CreateUserResponse struct {
+	SSS2 string `json:"sss2"`
 }

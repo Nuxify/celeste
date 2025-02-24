@@ -1,7 +1,20 @@
 package types
 
-// CreateUser data struct for create user repository
 type CreateUser struct {
-	ID   string
-	Data string
+	WalletAddress string
+	Email         string
+	Password      string
+	SSS1          string
+	Name          string
+	SSS3          string
+}
+
+type UpdateUser struct {
+	WalletAddress string
+	Name          string
+}
+
+type UpdateUserPassword struct {
+	WalletAddress string
+	Password      string
 }

@@ -21,6 +21,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"celeste/interfaces"
 	"celeste/interfaces/http/rest/middlewares/cors"
 	"celeste/interfaces/http/rest/viewmodels"
 )
@@ -41,8 +42,8 @@ var (
 // InitRouter initializes main routes
 func (router *router) InitRouter() *chi.Mux {
 	// DI assignment
-	// iamCommandController := interfaces.ServiceContainer().RegisterIAMRESTCommandController()
-	// iamQueryController := interfaces.ServiceContainer().RegisterIAMRESTQueryController()
+	userQueryController := interfaces.ServiceContainer().RegisterUserRESTQueryController()
+	userCommandController := interfaces.ServiceContainer().RegisterUserRESTCommandController()
 
 	// create router
 	r := chi.NewRouter()
@@ -80,6 +81,15 @@ func (router *router) InitRouter() *chi.Mux {
 	// API routes
 	r.Group(func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
+
+			// user module
+			r.Route("/user", func(r chi.Router) {
+				r.Post("/add", userCommandController.CreateUser)
+				r.Get("/list", userQueryController.GetUsers)
+				r.Get("/", userQueryController.GetCurrentUser)
+				r.Put("/update", userCommandController.UpdateUser)
+				r.Put("/password/update", userCommandController.UpdateUserPassword)
+			})
 		})
 	})
 

@@ -26,16 +26,12 @@
   ],
   "tags": [
     {
-      "name": "iam",
-      "description": "IAM service"
-    },
-    {
       "name": "user",
       "description": "User service"
     }
   ],
   "paths": {
-    "/user": {
+    "/user/add": {
       "post": {
         "tags": ["user"],
         "summary": "Create User",
@@ -52,43 +48,279 @@
           "required": true
         },
         "responses": {
-          "2xx": {
-            "description": "Success"
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CreateUserResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           },
           "4xx": {
-            "description": "Client side errors"
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
           },
           "5xx": {
-            "description": "Server side errors"
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/user/{id}": {
+    "/user/list": {
       "get": {
         "tags": ["user"],
-        "summary": "Get User By ID",
-        "description": "Get user by its id",
+        "summary": "Get Users",
+        "description": "Get all users",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "User id",
+            "name": "page",
+            "in": "query",
+            "description": "page",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
-          "2xx": {
-            "description": "Success"
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "users": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/GetUserResponse"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           },
           "4xx": {
-            "description": "Client side errors"
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
           },
           "5xx": {
-            "description": "Server side errors"
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get Current User",
+        "description": "Get current user",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/GetUserResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/update ": {
+      "put": {
+        "tags": ["user"],
+        "summary": "Update User",
+        "description": "Update user",
+        "requestBody": {
+          "description": "Update user request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/password/update": {
+      "put": {
+        "tags": ["user"],
+        "summary": "Update User Password",
+        "description": "Update user password",
+        "requestBody": {
+          "description": "Update user password request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -97,14 +329,102 @@
   "components": {
     "schemas": {
       "CreateUserRequest": {
-        "required": ["id", "data"],
+        "required": ["email", "name"],
         "type": "object",
         "properties": {
-          "id": {
+          "email": {
             "type": "string"
           },
-          "data": {
+          "name": {
             "type": "string"
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "required": ["name"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateUserPasswordRequest": {
+        "required": ["password"],
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "APIResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "data": {
+            "type": "object",
+            "example": {}
+          }
+        }
+      },
+      "APIErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "errorCode": {
+            "type": "string",
+            "example": "BAD_REQUEST"
+          },
+          "data": {
+            "type": "object",
+            "example": {}
+          }
+        }
+      },
+      "CreateUserResponse": {
+        "type": "object",
+        "properties": {
+          "sss2": {
+            "type": "string"
+          }
+        }
+      },
+      "GetUserResponse": {
+        "type": "object",
+        "properties": {
+          "walletAddress": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "emailVerifiedAt": {
+            "type": "integer",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "integer"
+          },
+          "updatedAt": {
+            "type": "integer"
           }
         }
       }

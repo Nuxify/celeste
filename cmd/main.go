@@ -17,7 +17,6 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"celeste/interfaces/http/grpc"
 	"celeste/interfaces/http/rest"
 )
 
@@ -48,8 +47,8 @@ func main() {
 	}
 
 	// serve rest server
-	go rest.ChiRouter().Serve(restPort)
+	rest.ChiRouter().Serve(restPort)
 
-	// serve grpc server
-	grpc.GRPCServer().Serve(grpcPort)
+	// // serve grpc server
+	// grpc.GRPCServer().Serve(grpcPort)
 }

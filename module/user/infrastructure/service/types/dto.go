@@ -1,7 +1,16 @@
 package types
 
-// CreateUser service types for create user
 type CreateUser struct {
-	ID   string
-	Data string
+	Email string
+	Name  string
+}
+
+type UpdateUser struct {
+	WalletAddress string
+	Name          string
+}
+
+type UpdateUserPassword struct {
+	WalletAddress string
+	Password      string
 }

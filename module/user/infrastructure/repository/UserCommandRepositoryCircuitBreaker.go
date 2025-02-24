@@ -4,7 +4,6 @@ import (
 	"github.com/afex/hystrix-go/hystrix"
 
 	hystrix_config "celeste/configs/hystrix"
-	"celeste/module/user/domain/entity"
 	"celeste/module/user/domain/repository"
 	repositoryTypes "celeste/module/user/infrastructure/repository/types"
 )
@@ -17,23 +16,28 @@ type UserCommandRepositoryCircuitBreaker struct {
 var config = hystrix_config.Config{}
 
 // InsertUser decorator pattern to insert user
-func (repository *UserCommandRepositoryCircuitBreaker) InsertUser(data repositoryTypes.CreateUser) (entity.User, error) {
-	output := make(chan entity.User, 1)
+func (repository *UserCommandRepositoryCircuitBreaker) InsertUser(data repositoryTypes.CreateUser) error {
+	output := make(chan error, 1)
+	errChan := make(chan error, 1)
+
 	hystrix.ConfigureCommand("insert_user", config.Settings())
 	errors := hystrix.Go("insert_user", func() error {
-		user, err := repository.UserCommandRepositoryInterface.InsertUser(data)
+		err := repository.UserCommandRepositoryInterface.InsertUser(data)
 		if err != nil {
-			return err
+			errChan <- err
+			return nil
 		}
 
-		output <- user
+		output <- nil
 		return nil
 	}, nil)
 
 	select {
 	case out := <-output:
-		return out, nil
+		return out
+	case err := <-errChan:
+		return err
 	case err := <-errors:
-		return entity.User{}, err
+		return err
 	}
 }

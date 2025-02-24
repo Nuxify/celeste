@@ -12,12 +12,42 @@ type UserQueryService struct {
 	repository.UserQueryRepositoryInterface
 }
 
-// GetUserByID retrieves the user provided by its id
-func (service *UserQueryService) GetUserByID(ctx context.Context, ID string) (entity.User, error) {
-	res, err := service.UserQueryRepositoryInterface.SelectUserByID(ID)
+// GetUsers get all users
+func (service *UserQueryService) GetUsers(ctx context.Context, page uint) ([]entity.User, uint, error) {
+	res, totalCount, err := service.UserQueryRepositoryInterface.SelectUsers(page)
 	if err != nil {
-		return res, err
+		return []entity.User{}, 0, err
+	}
+
+	return res, totalCount, nil
+}
+
+// GetUserByWalletAddress get the user provided by its wallet address
+func (service *UserQueryService) GetUserByWalletAddress(ctx context.Context, walletAddress string) (entity.User, error) {
+	res, err := service.UserQueryRepositoryInterface.SelectUserByWalletAddress(walletAddress)
+	if err != nil {
+		return entity.User{}, err
 	}
 
 	return res, nil
+}
+
+// GetUserByEmail get user by email
+func (service *UserQueryService) GetUserByEmail(ctx context.Context, email string) (entity.User, error) {
+	user, err := service.UserQueryRepositoryInterface.SelectUserByEmail(email)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return user, nil
+}
+
+// GetUserSSS get user sss3
+func (service *UserQueryService) GetUserSSS(ctx context.Context, walletAddress string) (entity.UserSSS, error) {
+	sss, err := service.UserQueryRepositoryInterface.SelectUserSSS(walletAddress)
+	if err != nil {
+		return entity.UserSSS{}, err
+	}
+
+	return sss, nil
 }
