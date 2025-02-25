@@ -166,11 +166,22 @@
         }
       }
     },
-    "/user/": {
+    "/user/{walletAddress}": {
       "get": {
         "tags": ["user"],
-        "summary": "Get Current User",
+        "summary": "Get User By Wallet Address",
         "description": "Get current user",
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "path",
+            "description": "wallet address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Success",
@@ -217,11 +228,22 @@
         }
       }
     },
-    "/user/update ": {
+    "/user/{walletAddress}/update ": {
       "put": {
         "tags": ["user"],
-        "summary": "Update User",
-        "description": "Update user",
+        "summary": "Update User By Wallet Address",
+        "description": "Update user by wallet address",
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "path",
+            "description": "wallet address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "Update user request",
           "content": {
@@ -271,11 +293,22 @@
         }
       }
     },
-    "/user/password/update": {
+    "/user/{walletAddress}/password/update": {
       "put": {
         "tags": ["user"],
-        "summary": "Update User Password",
-        "description": "Update user password",
+        "summary": "Update User Password By Wallet Address",
+        "description": "Update user password by wallet address",
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "path",
+            "description": "wallet address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "Update user password request",
           "content": {

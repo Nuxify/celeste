@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/jwtauth"
+	"github.com/go-chi/chi/v5"
 
 	"celeste/interfaces/http/rest/viewmodels"
 	"celeste/internal/errors"
+	apiError "celeste/internal/errors"
 	"celeste/module/user/application"
 	types "celeste/module/user/interfaces/http"
 )
@@ -107,11 +108,20 @@ func (controller *UserQueryController) GetUsers(w http.ResponseWriter, r *http.R
 	response.JSON(w)
 }
 
-// GetCurrentUser get current user
-func (controller *UserQueryController) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
-	_, claims, _ := jwtauth.FromContext(r.Context())
-	walletAddress := claims["id"].(string)
+// GetUserByWalletAddress get user by wallet address
+func (controller *UserQueryController) GetUserByWalletAddress(w http.ResponseWriter, r *http.Request) {
+	walletAddress := chi.URLParam(r, "walletAddress")
+	if len(walletAddress) == 0 {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Wallet address is required.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
 
+		response.JSON(w)
+		return
+	}
 	res, err := controller.UserQueryServiceInterface.GetUserByWalletAddress(context.TODO(), walletAddress)
 	if err != nil {
 		var httpCode int

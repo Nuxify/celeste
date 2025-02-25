@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/jwtauth"
+	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 
 	"celeste/interfaces/http/rest/viewmodels"
@@ -109,10 +109,20 @@ func (controller *UserCommandController) CreateUser(w http.ResponseWriter, r *ht
 	response.JSON(w)
 }
 
-// UpdateUser request handler to update user
-func (controller *UserCommandController) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	_, claims, _ := jwtauth.FromContext(r.Context())
-	walletAddress := claims["id"].(string)
+// UpdateUserByWalletAddress request handler to update user
+func (controller *UserCommandController) UpdateUserByWalletAddress(w http.ResponseWriter, r *http.Request) {
+	walletAddress := chi.URLParam(r, "walletAddress")
+	if len(walletAddress) == 0 {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Wallet address is required.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
 
 	// FIXME: remove this temporary code for allowing demo exploration
 	if walletAddress == "0xd78F31c1181a305C1Afa5F542fFBE7bda97D5C05" {
@@ -209,8 +219,18 @@ func (controller *UserCommandController) UpdateUser(w http.ResponseWriter, r *ht
 
 // UpdateUserPassword request handler to update user password
 func (controller *UserCommandController) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
-	_, claims, _ := jwtauth.FromContext(r.Context())
-	walletAddress := claims["id"].(string)
+	walletAddress := chi.URLParam(r, "walletAddress")
+	if len(walletAddress) == 0 {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "ID is required.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
 
 	// FIXME: remove this temporary code for allowing demo exploration
 	if walletAddress == "0xd78F31c1181a305C1Afa5F542fFBE7bda97D5C05" {
