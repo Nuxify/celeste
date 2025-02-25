@@ -38,6 +38,12 @@ func (repository *UserCommandRepository) InsertUser(data repositoryTypes.CreateU
 		return errors.New(apiError.DatabaseError)
 	}
 
+	// insert user sss record
+	err = repository.insertUserSSS(data.SSS3, data.WalletAddress)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
