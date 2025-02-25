@@ -8,8 +8,10 @@ import (
 type UserCommandRepositoryInterface interface {
 	// InsertUser inserts a new user
 	InsertUser(data types.CreateUser) error
-	// UpdateUserPassword updates user password
-	UpdateUserPassword(data types.UpdateUserPassword) error
 	// UpdateUser updates user
 	UpdateUser(data types.UpdateUser) error
+	// UpdateUserEmailVerifiedAt updates user email verified at
+	UpdateUserEmailVerifiedAt(email string) error
+	// UpdateUserPassword updates user password
+	UpdateUserPassword(data types.UpdateUserPassword) error
 }

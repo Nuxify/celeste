@@ -64,12 +64,11 @@ func (controller *UserCommandController) CreateUser(w http.ResponseWriter, r *ht
 		return
 	}
 
-	user := serviceTypes.CreateUser{
-		Email: request.Email,
-		Name:  request.Name,
-	}
-
-	sss2, err := controller.UserCommandServiceInterface.CreateUser(context.TODO(), user)
+	res, err := controller.UserCommandServiceInterface.CreateUser(context.TODO(), serviceTypes.CreateUser{
+		Email:    request.Email,
+		Name:     request.Name,
+		Password: request.Password,
+	})
 	if err != nil {
 		var httpCode int
 		var errorMsg string
@@ -102,8 +101,86 @@ func (controller *UserCommandController) CreateUser(w http.ResponseWriter, r *ht
 		Success: true,
 		Message: "Successfully created user.",
 		Data: &types.CreateUserResponse{
-			SSS2: sss2,
+			SSS2: res.SSS2,
+			SSS3: res.SSS3,
 		},
+	}
+
+	response.JSON(w)
+}
+
+// UpdateUserEmailVerifiedAt request handler to update user email verified at
+func (controller *UserCommandController) UpdateUserEmailVerifiedAt(w http.ResponseWriter, r *http.Request) {
+	var request types.UpdateUserEmailVerifiedAtRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	// validate request
+	err := types.Validate.Struct(request)
+	if err != nil {
+		errors := err.(validator.ValidationErrors)
+		if len(errors) > 0 {
+			response := viewmodels.HTTPResponseVM{
+				Status:    http.StatusBadRequest,
+				Success:   false,
+				Message:   types.ValidationErrors[errors[0].StructNamespace()],
+				ErrorCode: apiError.InvalidPayload,
+			}
+
+			response.JSON(w)
+			return
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	err = controller.UserCommandServiceInterface.UpdateUserEmailVerifiedAt(context.TODO(), request.Email)
+	if err != nil {
+		var httpCode int
+		var errorMsg string
+
+		switch err.Error() {
+		case errors.DatabaseError:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Error occurred while updating user email verified at."
+		default:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Please contact technical support."
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    httpCode,
+			Success:   false,
+			Message:   errorMsg,
+			ErrorCode: err.Error(),
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	response := viewmodels.HTTPResponseVM{
+		Status:  http.StatusOK,
+		Success: true,
+		Message: "Successfully updated user email verified at.",
 	}
 
 	response.JSON(w)
@@ -178,12 +255,10 @@ func (controller *UserCommandController) UpdateUserByWalletAddress(w http.Respon
 		return
 	}
 
-	user := serviceTypes.UpdateUser{
+	err = controller.UserCommandServiceInterface.UpdateUser(context.TODO(), serviceTypes.UpdateUser{
 		WalletAddress: walletAddress,
 		Name:          request.Name,
-	}
-
-	err = controller.UserCommandServiceInterface.UpdateUser(context.TODO(), user)
+	})
 	if err != nil {
 		var httpCode int
 		var errorMsg string
@@ -286,12 +361,11 @@ func (controller *UserCommandController) UpdateUserPassword(w http.ResponseWrite
 		return
 	}
 
-	password := serviceTypes.UpdateUserPassword{
-		WalletAddress: walletAddress,
-		Password:      request.Password,
-	}
-
-	err = controller.UserCommandServiceInterface.UpdateUserPassword(context.TODO(), password)
+	err = controller.UserCommandServiceInterface.UpdateUserPassword(context.TODO(), serviceTypes.UpdateUserPassword{
+		WalletAddress:   walletAddress,
+		CurrentPassword: request.CurrentPassword,
+		NewPassword:     request.NewPassword,
+	})
 	if err != nil {
 		var httpCode int
 		var errorMsg string

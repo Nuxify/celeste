@@ -14,6 +14,4 @@ type UserQueryServiceInterface interface {
 	GetUserByWalletAddress(ctx context.Context, walletAddress string) (entity.User, error)
 	// GetUserByEmail get user by email
 	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
-	// GetUserSSS get user sss3
-	GetUserSSS(ctx context.Context, walletAddress string) (entity.UserSSS, error)
 }

@@ -228,7 +228,57 @@
         }
       }
     },
-    "/user/{walletAddress}/update ": {
+    "/user/verified/update": {
+      "put": {
+        "tags": ["user"],
+        "summary": "Update User Email Verified At",
+        "description": "Update user email verified at",
+        "requestBody": {
+          "description": "Update user email verified at request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserEmailVerifiedAtRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{walletAddress}/update": {
       "put": {
         "tags": ["user"],
         "summary": "Update User By Wallet Address",
@@ -362,13 +412,16 @@
   "components": {
     "schemas": {
       "CreateUserRequest": {
-        "required": ["email", "name"],
+        "required": ["email", "name", "password"],
         "type": "object",
         "properties": {
           "email": {
             "type": "string"
           },
           "name": {
+            "type": "string"
+          },
+          "password": {
             "type": "string"
           }
         }
@@ -382,11 +435,24 @@
           }
         }
       },
-      "UpdateUserPasswordRequest": {
-        "required": ["password"],
+      "UpdateUserEmailVerifiedAtRequest": {
+        "required": ["email"],
         "type": "object",
         "properties": {
-          "password": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "UpdateUserPasswordRequest": {
+        "required": ["currentPassword", "newPassword"],
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string"
+          },
+          "newPassword": {
             "type": "string"
           }
         }
@@ -433,6 +499,9 @@
         "type": "object",
         "properties": {
           "sss2": {
+            "type": "string"
+          },
+          "sss3": {
             "type": "string"
           }
         }

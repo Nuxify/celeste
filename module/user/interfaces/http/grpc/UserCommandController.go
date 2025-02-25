@@ -17,7 +17,7 @@ type UserCommandController struct {
 // 	}
 
 // 	res, err := controller.UserCommandServiceInterface.CreateUser(context.TODO(), user)
-// 	if err != nil {
+// 	if err != nil { 
 // 		var code codes.Code
 
 // 		switch err.Error() {

@@ -11,6 +11,8 @@ const (
 	HystrixTimeout string = "HYSTRIX_TIMEOUT"
 	// InvalidRequestPayload is the code for binding errors
 	InvalidRequestPayload string = "INVALID_REQUEST_PAYLOAD"
+	// InvalidPassword is the code for invalid password
+	InvalidPassword string = "INVALID_PASSWORD"
 	// InvalidPayload is the code for payload not satisfying requirements
 	InvalidPayload string = "INVALID_PAYLOAD"
 	// MaximumLimitReached is the code when the max limit is reached

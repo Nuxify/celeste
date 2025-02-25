@@ -88,6 +88,7 @@ func (router *router) InitRouter() *chi.Mux {
 				r.Get("/list", userQueryController.GetUsers)
 				r.Get("/{walletAddress}", userQueryController.GetUserByWalletAddress)
 				r.Put("/{walletAddress}/update", userCommandController.UpdateUserByWalletAddress)
+				r.Put("/verified/update", userCommandController.UpdateUserEmailVerifiedAt)
 				r.Put("/{walletAddress}/password/update", userCommandController.UpdateUserPassword)
 			})
 		})

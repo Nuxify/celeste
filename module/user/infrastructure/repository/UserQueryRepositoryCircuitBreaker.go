@@ -100,30 +100,3 @@ func (repository *UserQueryRepositoryCircuitBreaker) SelectUserByEmail(email str
 		return entity.User{}, err
 	}
 }
-
-// SelectUserSSS decorator pattern for select user repository
-func (repository *UserQueryRepositoryCircuitBreaker) SelectUserSSS(walletAddress string) (entity.UserSSS, error) {
-	output := make(chan entity.UserSSS, 1)
-	errChan := make(chan error, 1)
-
-	hystrix.ConfigureCommand("select_user_sss", config.Settings())
-	errors := hystrix.Go("select_user_sss", func() error {
-		sss, err := repository.UserQueryRepositoryInterface.SelectUserSSS(walletAddress)
-		if err != nil {
-			errChan <- err
-			return nil
-		}
-
-		output <- sss
-		return nil
-	}, nil)
-
-	select {
-	case out := <-output:
-		return out, nil
-	case err := <-errChan:
-		return entity.UserSSS{}, err
-	case err := <-errors:
-		return entity.UserSSS{}, err
-	}
-}

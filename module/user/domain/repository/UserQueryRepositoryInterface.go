@@ -12,6 +12,4 @@ type UserQueryRepositoryInterface interface {
 	SelectUserByWalletAddress(walletAddress string) (entity.User, error)
 	// SelectUserByEmail select a user by email
 	SelectUserByEmail(email string) (entity.User, error)
-	// SelectUserSSS select user sss3
-	SelectUserSSS(walletAddress string) (entity.UserSSS, error)
 }

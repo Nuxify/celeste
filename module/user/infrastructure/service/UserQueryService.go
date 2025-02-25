@@ -41,13 +41,3 @@ func (service *UserQueryService) GetUserByEmail(ctx context.Context, email strin
 
 	return user, nil
 }
-
-// GetUserSSS get user sss3
-func (service *UserQueryService) GetUserSSS(ctx context.Context, walletAddress string) (entity.UserSSS, error) {
-	sss, err := service.UserQueryRepositoryInterface.SelectUserSSS(walletAddress)
-	if err != nil {
-		return entity.UserSSS{}, err
-	}
-
-	return sss, nil
-}

@@ -87,22 +87,3 @@ func (repository *UserQueryRepository) SelectUserByEmail(email string) (entity.U
 
 	return user, nil
 }
-
-// SelectUserSSS select user sss3
-func (repository *UserQueryRepository) SelectUserSSS(walletAddress string) (entity.UserSSS, error) {
-	var sss entity.UserSSS
-
-	stmt := fmt.Sprintf("SELECT * FROM %s WHERE user_wallet_address=:user_wallet_address", sss.GetModelName())
-	err := repository.QueryRow(stmt, map[string]interface{}{
-		"user_wallet_address": walletAddress,
-	}, &sss)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return sss, errors.New(apiError.MissingRecord)
-		}
-
-		return sss, errors.New(apiError.DatabaseError)
-	}
-
-	return sss, nil
-}

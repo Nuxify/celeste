@@ -1,8 +1,14 @@
 package types
 
 type CreateUser struct {
-	Email string
-	Name  string
+	Email    string
+	Name     string
+	Password string
+}
+
+type CreateUserResult struct {
+	SSS2 string
+	SSS3 string
 }
 
 type UpdateUser struct {
@@ -11,6 +17,7 @@ type UpdateUser struct {
 }
 
 type UpdateUserPassword struct {
-	WalletAddress string
-	Password      string
+	WalletAddress   string
+	CurrentPassword string
+	NewPassword     string
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"log"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/hashicorp/vault/shamir"
 	"github.com/segmentio/ksuid"
 
+	apiError "celeste/internal/errors"
 	"celeste/internal/password"
 	"celeste/module/user/domain/repository"
 	repositoryTypes "celeste/module/user/infrastructure/repository/types"
@@ -21,15 +23,16 @@ import (
 // UserCommandService handles the user command service logic
 type UserCommandService struct {
 	repository.UserCommandRepositoryInterface
+	repository.UserQueryRepositoryInterface
 }
 
 // CreateUser create a user
-func (service *UserCommandService) CreateUser(ctx context.Context, data types.CreateUser) (string, error) {
+func (service *UserCommandService) CreateUser(ctx context.Context, data types.CreateUser) (types.CreateUserResult, error) {
 	// generate wallet
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return types.CreateUserResult{}, err
 	}
 
 	privateKeyBytes := crypto.FromECDSA(privateKey)
@@ -43,7 +46,7 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 	bytesShares, err := shamir.Split([]byte(privateKeyEncoded), 3, 2) // 2 of 3
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return types.CreateUserResult{}, err
 	}
 
 	var sss []string
@@ -59,7 +62,7 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 	// TODO: remove test combine
 	byteShare1, err := base64.StdEncoding.DecodeString(sss[0])
 	if err != nil {
-		return "", err
+		return types.CreateUserResult{}, err
 	}
 	//byteShare2, err := base64.StdEncoding.DecodeString(sss[1])
 	// if err != nil {
@@ -67,7 +70,7 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 	// }
 	byteShare3, err := base64.StdEncoding.DecodeString(sss[2])
 	if err != nil {
-		return "", err
+		return types.CreateUserResult{}, err
 	}
 
 	shares := [][]byte{
@@ -77,7 +80,7 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 
 	recovered, err := shamir.Combine(shares)
 	if err != nil {
-		return "", err
+		return types.CreateUserResult{}, err
 	}
 
 	fmt.Println(string(recovered), string(recovered) == privateKeyEncoded)
@@ -88,10 +91,9 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 	sss3 := sss[2] // for backup
 
 	// hash password
-	defaultPassword := "seek2024"
-	hashedPassword, err := password.HashPassword(defaultPassword)
+	hashedPassword, err := password.HashPassword(data.Password)
 	if err != nil {
-		return "", err
+		return types.CreateUserResult{}, err
 	}
 
 	err = service.UserCommandRepositoryInterface.InsertUser(repositoryTypes.CreateUser{
@@ -100,13 +102,15 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 		Password:      hashedPassword,
 		SSS1:          sss1,
 		Name:          data.Name,
-		SSS3:          sss3,
 	})
 	if err != nil {
-		return "", err
+		return types.CreateUserResult{}, err
 	}
 
-	return sss2, nil
+	return types.CreateUserResult{
+		SSS2: sss2,
+		SSS3: sss3,
+	}, nil
 }
 
 // UpdateUser update user by address
@@ -122,16 +126,37 @@ func (service *UserCommandService) UpdateUser(ctx context.Context, data types.Up
 	return nil
 }
 
+// UpdateUserEmailVerifiedAt update user email verified at by address
+func (service *UserCommandService) UpdateUserEmailVerifiedAt(ctx context.Context, email string) error {
+	err := service.UserCommandRepositoryInterface.UpdateUserEmailVerifiedAt(email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // UpdateUserPassword update user password by address
 func (service *UserCommandService) UpdateUserPassword(ctx context.Context, data types.UpdateUserPassword) error {
-	hashedPassword, err := password.HashPassword(data.Password)
+	// get user by wallet address
+	user, err := service.UserQueryRepositoryInterface.SelectUserByWalletAddress(data.WalletAddress)
+	if err != nil {
+		return err
+	}
+
+	// compare current password
+	if !password.CheckPasswordHash(data.CurrentPassword, user.Password) {
+		return errors.New(apiError.InvalidPassword)
+	}
+
+	hashedPassword, err := password.HashPassword(data.NewPassword)
 	if err != nil {
 		return err
 	}
 
 	err = service.UserCommandRepositoryInterface.UpdateUserPassword(repositoryTypes.UpdateUserPassword{
 		WalletAddress: data.WalletAddress,
-		Password:      hashedPassword,
+		NewPassword:   hashedPassword,
 	})
 	if err != nil {
 		return err
