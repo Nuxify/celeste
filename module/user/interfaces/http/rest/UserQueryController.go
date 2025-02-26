@@ -108,6 +108,70 @@ func (controller *UserQueryController) GetUsers(w http.ResponseWriter, r *http.R
 	response.JSON(w)
 }
 
+// GetUserByEmail get user by email
+func (controller *UserQueryController) GetUserByEmail(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	if len(email) == 0 {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Email is required.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	res, err := controller.UserQueryServiceInterface.GetUserByEmail(context.TODO(), email)
+	if err != nil {
+		var httpCode int
+		var errorMsg string
+
+		switch err.Error() {
+		case errors.MissingRecord:
+			httpCode = http.StatusNotFound
+			errorMsg = "No records found."
+		default:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Database error."
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    httpCode,
+			Success:   false,
+			Message:   errorMsg,
+			ErrorCode: err.Error(),
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	user := &types.GetUserResponse{
+		WalletAddress: res.WalletAddress,
+		Email:         res.Email,
+		Password:      res.Password,
+		Name:          res.Name,
+		CreatedAt:     uint64(res.CreatedAt.Unix()),
+		UpdatedAt:     uint64(res.UpdatedAt.Unix()),
+	}
+
+	if res.EmailVerifiedAt != nil {
+		timestamp := uint64(res.EmailVerifiedAt.Unix())
+		user.EmailVerifiedAt = &timestamp
+	}
+
+	response := viewmodels.HTTPResponseVM{
+		Status:  http.StatusOK,
+		Success: true,
+		Message: "Successfully fetched user by email.",
+		Data:    user,
+	}
+
+	response.JSON(w)
+}
+
 // GetUserByWalletAddress get user by wallet address
 func (controller *UserQueryController) GetUserByWalletAddress(w http.ResponseWriter, r *http.Request) {
 	walletAddress := chi.URLParam(r, "walletAddress")
