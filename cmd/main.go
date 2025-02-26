@@ -17,8 +17,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"gomora/interfaces/http/grpc"
-	"gomora/interfaces/http/rest"
+	"celeste/interfaces/http/rest"
 )
 
 func init() {
@@ -48,8 +47,8 @@ func main() {
 	}
 
 	// serve rest server
-	go rest.ChiRouter().Serve(restPort)
+	rest.ChiRouter().Serve(restPort)
 
-	// serve grpc server
-	grpc.GRPCServer().Serve(grpcPort)
+	// // serve grpc server
+	// grpc.GRPCServer().Serve(grpcPort)
 }

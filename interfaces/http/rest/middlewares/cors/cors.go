@@ -3,7 +3,7 @@ package cors
 import (
 	"github.com/go-chi/cors"
 
-	corsConfig "gomora/configs/cors"
+	corsConfig "celeste/configs/cors"
 )
 
 // Init initializes the CORS configuration

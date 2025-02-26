@@ -6,7 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"gomora/infrastructures/database/mysql/types"
+	"celeste/infrastructures/database/mysql/types"
 )
 
 func TestConnection(t *testing.T) {

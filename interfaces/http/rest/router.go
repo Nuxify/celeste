@@ -18,12 +18,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
-	"gomora/interfaces"
-	"gomora/interfaces/http/rest/middlewares/cors"
-	"gomora/interfaces/http/rest/viewmodels"
+	"celeste/interfaces"
+	"celeste/interfaces/http/rest/middlewares/cors"
+	"celeste/interfaces/http/rest/viewmodels"
 )
 
 // ChiRouterInterface declares methods for the chi router
@@ -42,8 +42,8 @@ var (
 // InitRouter initializes main routes
 func (router *router) InitRouter() *chi.Mux {
 	// DI assignment
-	recordCommandController := interfaces.ServiceContainer().RegisterRecordRESTCommandController()
-	recordQueryController := interfaces.ServiceContainer().RegisterRecordRESTQueryController()
+	userQueryController := interfaces.ServiceContainer().RegisterUserRESTQueryController()
+	userCommandController := interfaces.ServiceContainer().RegisterUserRESTCommandController()
 
 	// create router
 	r := chi.NewRouter()
@@ -81,10 +81,15 @@ func (router *router) InitRouter() *chi.Mux {
 	// API routes
 	r.Group(func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
-			// record module
-			r.Route("/record", func(r chi.Router) {
-				r.Post("/", recordCommandController.CreateRecord)
-				r.Get("/{id}", recordQueryController.GetRecordByID)
+
+			// user module
+			r.Route("/user", func(r chi.Router) {
+				r.Post("/add", userCommandController.CreateUser)
+				r.Get("/list", userQueryController.GetUsers)
+				r.Get("/{walletAddress}", userQueryController.GetUserByWalletAddress)
+				r.Put("/{walletAddress}/update", userCommandController.UpdateUserByWalletAddress)
+				r.Put("/email/verify", userCommandController.UpdateUserEmailVerifiedAt)
+				r.Put("/{walletAddress}/password/update", userCommandController.UpdateUserPassword)
 			})
 		})
 	})

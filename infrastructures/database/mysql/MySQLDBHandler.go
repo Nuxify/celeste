@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 
-	"gomora/infrastructures/database/mysql/types"
+	"celeste/infrastructures/database/mysql/types"
 )
 
 // MySQLDBHandler handles mysql operations
@@ -23,6 +23,17 @@ type MySQLDBHandler struct {
 
 type viaSSHDialer struct {
 	client *ssh.Client
+}
+
+// Begin starts a new transaction
+func (h *MySQLDBHandler) Begin() (*sqlx.Tx, error) {
+	// begin transaction
+	tx, err := h.Conn.Beginx()
+	if err != nil {
+		return nil, err
+	}
+
+	return tx, nil
 }
 
 // Connect opens a new connection to the mysql interface

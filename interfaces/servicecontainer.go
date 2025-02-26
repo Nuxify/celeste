@@ -14,23 +14,22 @@ import (
 	"os"
 	"sync"
 
-	"gomora/infrastructures/database/mysql"
-	"gomora/infrastructures/database/mysql/types"
-	recordRepository "gomora/module/record/infrastructure/repository"
-	recordService "gomora/module/record/infrastructure/service"
-	recordGRPC "gomora/module/record/interfaces/http/grpc"
-	recordREST "gomora/module/record/interfaces/http/rest"
+	"celeste/infrastructures/database/mysql"
+	"celeste/infrastructures/database/mysql/types"
+	userRepository "celeste/module/user/infrastructure/repository"
+	userService "celeste/module/user/infrastructure/service"
+	userREST "celeste/module/user/interfaces/http/rest"
 )
 
 // ServiceContainerInterface contains the dependency injected instances
 type ServiceContainerInterface interface {
-	// gRPC
-	RegisterRecordGRPCCommandController() recordGRPC.RecordCommandController
-	RegisterRecordGRPCQueryController() recordGRPC.RecordQueryController
+	// // gRPC
+	// RegisterUserGRPCCommandController() userGRPC.UserCommandController
+	// RegisterUserGRPCQueryController() userGRPC.UserQueryController
 
 	// REST
-	RegisterRecordRESTCommandController() recordREST.RecordCommandController
-	RegisterRecordRESTQueryController() recordREST.RecordQueryController
+	RegisterUserRESTCommandController() userREST.UserCommandController
+	RegisterUserRESTQueryController() userREST.UserQueryController
 }
 
 type kernel struct{}
@@ -43,77 +42,82 @@ var (
 )
 
 // ================================= gRPC ===================================
-// RegisterRecordGRPCCommandController performs dependency injection to the RegisterRecordGRPCCommandController
-func (k *kernel) RegisterRecordGRPCCommandController() recordGRPC.RecordCommandController {
-	service := k.recordCommandServiceContainer()
+// // RegisterUserGRPCCommandController performs dependency injection to the RegisterUserGRPCCommandController
+// func (k *kernel) RegisterUserGRPCCommandController() userGRPC.UserCommandController {
+// 	service := k.userCommandServiceContainer()
 
-	controller := recordGRPC.RecordCommandController{
-		RecordCommandServiceInterface: service,
-	}
+// 	controller := userGRPC.UserCommandController{
+// 		UserCommandServiceInterface: service,
+// 	}
 
-	return controller
-}
+// 	return controller
+// }
 
-// RegisterRecordGRPCQueryController performs dependency injection to the RegisterRecordGRPCQueryController
-func (k *kernel) RegisterRecordGRPCQueryController() recordGRPC.RecordQueryController {
-	service := k.recordQueryServiceContainer()
+// // RegisterUserGRPCQueryController performs dependency injection to the RegisterUserGRPCQueryController
+// func (k *kernel) RegisterUserGRPCQueryController() userGRPC.UserQueryController {
+// 	service := k.userQueryServiceContainer()
 
-	controller := recordGRPC.RecordQueryController{
-		RecordQueryServiceInterface: service,
-	}
+// 	controller := userGRPC.UserQueryController{
+// 		UserQueryServiceInterface: service,
+// 	}
 
-	return controller
-}
+// 	return controller
+// }
 
-//==========================================================================
-
+// ==========================================================================
 // ================================= REST ===================================
-// RegisterRecordRESTCommandController performs dependency injection to the RegisterRecordRESTCommandController
-func (k *kernel) RegisterRecordRESTCommandController() recordREST.RecordCommandController {
-	service := k.recordCommandServiceContainer()
+// RegisterUserRESTCommandController performs dependency injection to the RegisterUserRESTCommandController
+func (k *kernel) RegisterUserRESTCommandController() userREST.UserCommandController {
+	service := k.userCommandServiceContainer()
 
-	controller := recordREST.RecordCommandController{
-		RecordCommandServiceInterface: service,
+	controller := userREST.UserCommandController{
+		UserCommandServiceInterface: service,
 	}
 
 	return controller
 }
 
-// RegisterRecordRESTQueryController performs dependency injection to the RegisterRecordRESTQueryController
-func (k *kernel) RegisterRecordRESTQueryController() recordREST.RecordQueryController {
-	service := k.recordQueryServiceContainer()
+// RegisterUserRESTQueryController performs dependency injection to the RegisterUserRESTQueryController
+func (k *kernel) RegisterUserRESTQueryController() userREST.UserQueryController {
+	service := k.userQueryServiceContainer()
 
-	controller := recordREST.RecordQueryController{
-		RecordQueryServiceInterface: service,
+	controller := userREST.UserQueryController{
+		UserQueryServiceInterface: service,
 	}
 
 	return controller
 }
 
-//==========================================================================
-
-func (k *kernel) recordCommandServiceContainer() *recordService.RecordCommandService {
-	repository := &recordRepository.RecordCommandRepository{
+// ==========================================================================
+func (k *kernel) userCommandServiceContainer() *userService.UserCommandService {
+	repository := &userRepository.UserCommandRepository{
 		MySQLDBHandlerInterface: mysqlDBHandler,
 	}
 
-	service := &recordService.RecordCommandService{
-		RecordCommandRepositoryInterface: &recordRepository.RecordCommandRepositoryCircuitBreaker{
-			RecordCommandRepositoryInterface: repository,
+	queryRepository := &userRepository.UserQueryRepository{
+		MySQLDBHandlerInterface: mysqlDBHandler,
+	}
+
+	service := &userService.UserCommandService{
+		UserCommandRepositoryInterface: &userRepository.UserCommandRepositoryCircuitBreaker{
+			UserCommandRepositoryInterface: repository,
+		},
+		UserQueryRepositoryInterface: &userRepository.UserQueryRepositoryCircuitBreaker{
+			UserQueryRepositoryInterface: queryRepository,
 		},
 	}
 
 	return service
 }
 
-func (k *kernel) recordQueryServiceContainer() *recordService.RecordQueryService {
-	repository := &recordRepository.RecordQueryRepository{
+func (k *kernel) userQueryServiceContainer() *userService.UserQueryService {
+	repository := &userRepository.UserQueryRepository{
 		MySQLDBHandlerInterface: mysqlDBHandler,
 	}
 
-	service := &recordService.RecordQueryService{
-		RecordQueryRepositoryInterface: &recordRepository.RecordQueryRepositoryCircuitBreaker{
-			RecordQueryRepositoryInterface: repository,
+	service := &userService.UserQueryService{
+		UserQueryRepositoryInterface: &userRepository.UserQueryRepositoryCircuitBreaker{
+			UserQueryRepositoryInterface: repository,
 		},
 	}
 
