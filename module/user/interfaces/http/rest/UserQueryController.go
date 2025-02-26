@@ -88,6 +88,7 @@ func (controller *UserQueryController) GetUsers(w http.ResponseWriter, r *http.R
 		users = append(users, types.GetUserResponse{
 			WalletAddress:   user.WalletAddress,
 			Email:           user.Email,
+			Password:        user.Password,
 			Name:            user.Name,
 			EmailVerifiedAt: emailVerifiedTimestamp,
 			CreatedAt:       uint64(user.CreatedAt.Unix()),
@@ -100,8 +101,8 @@ func (controller *UserQueryController) GetUsers(w http.ResponseWriter, r *http.R
 		Success: true,
 		Message: "Successfully fetched all users.",
 		Data: &types.GetPaginatedUserResponse{
-			Users:      users,
-			TotalCount: totalCount,
+			Users: users,
+			Total: totalCount,
 		},
 	}
 
@@ -215,6 +216,7 @@ func (controller *UserQueryController) GetUserByWalletAddress(w http.ResponseWri
 	user := &types.GetUserResponse{
 		WalletAddress: res.WalletAddress,
 		Email:         res.Email,
+		Password:      res.Password,
 		Name:          res.Name,
 		CreatedAt:     uint64(res.CreatedAt.Unix()),
 		UpdatedAt:     uint64(res.UpdatedAt.Unix()),
