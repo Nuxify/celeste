@@ -2,8 +2,8 @@ package types
 
 type CreateUser struct {
 	Email    string
-	Name     string
 	Password string
+	Name     string
 }
 
 type CreateUserResult struct {

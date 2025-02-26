@@ -12,15 +12,15 @@
   },
   "servers": [
     {
-      "url": "https://celeste-api.nuxify.tech/v1",
+      "url": "http://localhost:8090/v1",
       "description": "Production"
     },
     {
-      "url": "https://staging-celeste-api.nuxify.tech/v1",
+      "url": "http://localhost:7090/v1",
       "description": "Staging"
     },
     {
-      "url": "http://localhost:8000/v1",
+      "url": "http://localhost:7090/v1",
       "description": "Local"
     }
   ],
@@ -412,16 +412,16 @@
   "components": {
     "schemas": {
       "CreateUserRequest": {
-        "required": ["email", "name", "password"],
+        "required": ["email", "password", "name"],
         "type": "object",
         "properties": {
           "email": {
             "type": "string"
           },
-          "name": {
+          "password": {
             "type": "string"
           },
-          "password": {
+          "name": {
             "type": "string"
           }
         }

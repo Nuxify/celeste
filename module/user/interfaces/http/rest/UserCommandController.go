@@ -66,8 +66,8 @@ func (controller *UserCommandController) CreateUser(w http.ResponseWriter, r *ht
 
 	res, err := controller.UserCommandServiceInterface.CreateUser(context.TODO(), serviceTypes.CreateUser{
 		Email:    request.Email,
-		Name:     request.Name,
 		Password: request.Password,
+		Name:     request.Name,
 	})
 	if err != nil {
 		var httpCode int

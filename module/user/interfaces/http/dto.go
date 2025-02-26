@@ -8,8 +8,8 @@ var (
 	Validate         *validator.Validate = validator.New(validator.WithRequiredStructEnabled())
 	ValidationErrors map[string]string   = map[string]string{
 		"CreateUserRequest.Email":                   "Email field is required.",
-		"CreateUserRequest.Name":                    "Name field is required.",
 		"CreateUserRequest.Password":                "Password field is required.",
+		"CreateUserRequest.Name":                    "Name field is required.",
 		"UpdateUserRequest.Name":                    "Name field is required.",
 		"UpdateUserPasswordRequest.CurrentPassword": "Current password field is required.",
 		"UpdateUserPasswordRequest.NewPassword":     "New password field is required.",
@@ -18,8 +18,8 @@ var (
 
 type CreateUserRequest struct {
 	Email    string `json:"email" validate:"required"`
-	Name     string `json:"name" validate:"required"`
 	Password string `json:"password" validate:"required"`
+	Name     string `json:"name" validate:"required"`
 }
 
 type UpdateUserRequest struct {
