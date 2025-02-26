@@ -93,7 +93,7 @@
         }
       }
     },
-    "/user/": {
+    "/user": {
       "get": {
         "tags": ["user"],
         "summary": "Get User By Email",
