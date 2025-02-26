@@ -228,7 +228,7 @@
         }
       }
     },
-    "/user/verified/update": {
+    "/user/email/verify": {
       "put": {
         "tags": ["user"],
         "summary": "Update User Email Verified At",
