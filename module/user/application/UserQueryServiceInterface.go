@@ -10,8 +10,8 @@ import (
 type UserQueryServiceInterface interface {
 	// GetUsers get all users
 	GetUsers(ctx context.Context, page uint) ([]entity.User, uint, error)
-	// GetUserByWalletAddress get the user provided by its wallet address
-	GetUserByWalletAddress(ctx context.Context, walletAddress string) (entity.User, error)
 	// GetUserByEmail get user by email
 	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
+	// GetUserByWalletAddress get the user provided by its wallet address
+	GetUserByWalletAddress(ctx context.Context, walletAddress string) (entity.User, error)
 }

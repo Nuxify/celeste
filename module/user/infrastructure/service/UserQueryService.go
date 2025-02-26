@@ -22,16 +22,6 @@ func (service *UserQueryService) GetUsers(ctx context.Context, page uint) ([]ent
 	return res, totalCount, nil
 }
 
-// GetUserByWalletAddress get the user provided by its wallet address
-func (service *UserQueryService) GetUserByWalletAddress(ctx context.Context, walletAddress string) (entity.User, error) {
-	res, err := service.UserQueryRepositoryInterface.SelectUserByWalletAddress(walletAddress)
-	if err != nil {
-		return entity.User{}, err
-	}
-
-	return res, nil
-}
-
 // GetUserByEmail get user by email
 func (service *UserQueryService) GetUserByEmail(ctx context.Context, email string) (entity.User, error) {
 	user, err := service.UserQueryRepositoryInterface.SelectUserByEmail(email)
@@ -40,4 +30,14 @@ func (service *UserQueryService) GetUserByEmail(ctx context.Context, email strin
 	}
 
 	return user, nil
+}
+
+// GetUserByWalletAddress get the user provided by its wallet address
+func (service *UserQueryService) GetUserByWalletAddress(ctx context.Context, walletAddress string) (entity.User, error) {
+	res, err := service.UserQueryRepositoryInterface.SelectUserByWalletAddress(walletAddress)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return res, nil
 }

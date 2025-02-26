@@ -85,6 +85,7 @@ func (router *router) InitRouter() *chi.Mux {
 			// user module
 			r.Route("/user", func(r chi.Router) {
 				r.Post("/add", userCommandController.CreateUser)
+				r.Get("/", userQueryController.GetUserByEmail)
 				r.Get("/list", userQueryController.GetUsers)
 				r.Get("/{walletAddress}", userQueryController.GetUserByWalletAddress)
 				r.Put("/{walletAddress}/update", userCommandController.UpdateUserByWalletAddress)

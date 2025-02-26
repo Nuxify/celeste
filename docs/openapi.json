@@ -93,6 +93,56 @@
         }
       }
     },
+    "/user": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get User By Email",
+        "description": "Get user by email",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/list": {
       "get": {
         "tags": ["user"],
@@ -513,6 +563,9 @@
             "type": "string"
           },
           "email": {
+            "type": "string"
+          },
+          "password": {
             "type": "string"
           },
           "name": {
