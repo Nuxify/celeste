@@ -136,14 +136,14 @@ func (service *UserCommandService) UpdateUserEmailVerifiedAt(ctx context.Context
 
 // UpdateUserPassword update user password by address
 func (service *UserCommandService) UpdateUserPassword(ctx context.Context, data types.UpdateUserPassword) error {
-	hashedPassword, err := password.HashPassword(data.NewPassword)
+	hashedPassword, err := password.HashPassword(data.Password)
 	if err != nil {
 		return err
 	}
 
 	err = service.UserCommandRepositoryInterface.UpdateUserPassword(repositoryTypes.UpdateUserPassword{
 		WalletAddress: data.WalletAddress,
-		NewPassword:   hashedPassword,
+		Password:      hashedPassword,
 	})
 	if err != nil {
 		return err

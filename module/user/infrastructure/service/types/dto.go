@@ -19,5 +19,5 @@ type UpdateUser struct {
 
 type UpdateUserPassword struct {
 	WalletAddress string
-	NewPassword   string
+	Password      string
 }

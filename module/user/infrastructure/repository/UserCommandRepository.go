@@ -84,7 +84,7 @@ func (repository *UserCommandRepository) UpdateUserEmailVerifiedAt(email string)
 func (repository *UserCommandRepository) UpdateUserPassword(data repositoryTypes.UpdateUserPassword) error {
 	user := &entity.User{
 		WalletAddress: data.WalletAddress,
-		Password:      data.NewPassword,
+		Password:      data.Password,
 	}
 
 	// update users
