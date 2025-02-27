@@ -21,7 +21,6 @@ import (
 // UserCommandService handles the user command service logic
 type UserCommandService struct {
 	repository.UserCommandRepositoryInterface
-	repository.UserQueryRepositoryInterface
 }
 
 // CreateUser create a user

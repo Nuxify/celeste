@@ -338,7 +338,7 @@ func (controller *UserCommandController) UpdateUserPassword(w http.ResponseWrite
 
 	err = controller.UserCommandServiceInterface.UpdateUserPassword(context.TODO(), serviceTypes.UpdateUserPassword{
 		WalletAddress: walletAddress,
-		NewPassword:   request.NewPassword,
+		NewPassword:   request.Password,
 	})
 	if err != nil {
 		var httpCode int
