@@ -108,8 +108,9 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 	}
 
 	return types.CreateUserResult{
-		SSS2: sss2,
-		SSS3: sss3,
+		WalletAddress: publicAddress,
+		SSS2:          sss2,
+		SSS3:          sss3,
 	}, nil
 }
 

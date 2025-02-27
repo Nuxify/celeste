@@ -548,6 +548,9 @@
       "CreateUserResponse": {
         "type": "object",
         "properties": {
+          "walletAddress": {
+            "type": "string"
+          },
           "sss2": {
             "type": "string"
           },

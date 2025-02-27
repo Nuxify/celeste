@@ -7,8 +7,9 @@ type CreateUser struct {
 }
 
 type CreateUserResult struct {
-	SSS2 string
-	SSS3 string
+	WalletAddress string
+	SSS2          string
+	SSS3          string
 }
 
 type UpdateUser struct {

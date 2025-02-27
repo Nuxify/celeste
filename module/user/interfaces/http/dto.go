@@ -36,8 +36,9 @@ type UpdateUserPasswordRequest struct {
 }
 
 type CreateUserResponse struct {
-	SSS2 string `json:"sss2"`
-	SSS3 string `json:"sss3"`
+	WalletAddress string `json:"walletAddress"`
+	SSS2          string `json:"sss2"`
+	SSS3          string `json:"sss3"`
 }
 
 type GetUserResponse struct {
