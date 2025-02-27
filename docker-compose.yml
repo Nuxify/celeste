@@ -12,18 +12,7 @@ services:
       - proxy
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.${API_NAME}.entrypoints=http"
-      - "traefik.http.routers.${API_NAME}.rule=Host(`${API_URL_REST}`)"
-      - "traefik.http.routers.${API_NAME}-secure.entrypoints=https"
-      - "traefik.http.routers.${API_NAME}-secure.rule=Host(`${API_URL_REST}`)"
-      - "traefik.http.routers.${API_NAME}-secure.tls=true"
-      - "traefik.http.routers.${API_NAME}-secure.tls.certresolver=http"
-      - "traefik.http.routers.${API_NAME}-secure.service=${API_NAME}"
-      - "traefik.http.services.${API_NAME}.loadbalancer.server.port=${API_URL_REST_PORT}"
-      - "traefik.docker.network=proxy"
-
+ 
 networks:
   proxy:
     external: true
