@@ -202,19 +202,6 @@ func (controller *UserCommandController) UpdateUserByWalletAddress(w http.Respon
 		return
 	}
 
-	// FIXME: remove this temporary code for allowing demo exploration
-	if walletAddress == "0xd78F31c1181a305C1Afa5F542fFBE7bda97D5C05" {
-		response := viewmodels.HTTPResponseVM{
-			Status:    http.StatusUnauthorized,
-			Success:   false,
-			Message:   "For demo purposes only. Contact support to explore the full features.",
-			ErrorCode: apiError.UnauthorizedAccess,
-		}
-
-		response.JSON(w)
-		return
-	}
-
 	var request types.UpdateUserRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
@@ -308,19 +295,6 @@ func (controller *UserCommandController) UpdateUserPassword(w http.ResponseWrite
 		return
 	}
 
-	// FIXME: remove this temporary code for allowing demo exploration
-	if walletAddress == "0xd78F31c1181a305C1Afa5F542fFBE7bda97D5C05" {
-		response := viewmodels.HTTPResponseVM{
-			Status:    http.StatusUnauthorized,
-			Success:   false,
-			Message:   "For demo purposes only. Contact support to explore the full features.",
-			ErrorCode: apiError.UnauthorizedAccess,
-		}
-
-		response.JSON(w)
-		return
-	}
-
 	var request types.UpdateUserPasswordRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
@@ -363,9 +337,8 @@ func (controller *UserCommandController) UpdateUserPassword(w http.ResponseWrite
 	}
 
 	err = controller.UserCommandServiceInterface.UpdateUserPassword(context.TODO(), serviceTypes.UpdateUserPassword{
-		WalletAddress:   walletAddress,
-		CurrentPassword: request.CurrentPassword,
-		NewPassword:     request.NewPassword,
+		WalletAddress: walletAddress,
+		Password:      request.Password,
 	})
 	if err != nil {
 		var httpCode int

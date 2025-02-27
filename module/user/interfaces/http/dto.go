@@ -31,8 +31,7 @@ type UpdateUserEmailVerifiedAtRequest struct {
 }
 
 type UpdateUserPasswordRequest struct {
-	CurrentPassword string `json:"currentPassword" validate:"required"`
-	NewPassword     string `json:"newPassword" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type CreateUserResponse struct {
