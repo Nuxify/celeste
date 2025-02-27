@@ -1,6 +1,6 @@
 # The Celeste Project
 
-Gomora service for Account Abstraction (AA) implementation using MPC SSS.
+Gomora service for Account Abstraction (AA) implementation using SSS.
 
 ## Local Development
 
