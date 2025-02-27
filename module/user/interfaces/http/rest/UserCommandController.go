@@ -101,8 +101,9 @@ func (controller *UserCommandController) CreateUser(w http.ResponseWriter, r *ht
 		Success: true,
 		Message: "Successfully created user.",
 		Data: &types.CreateUserResponse{
-			SSS2: res.SSS2,
-			SSS3: res.SSS3,
+			WalletAddress: res.WalletAddress,
+			SSS2:          res.SSS2,
+			SSS3:          res.SSS3,
 		},
 	}
 
