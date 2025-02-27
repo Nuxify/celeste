@@ -568,6 +568,9 @@
           "password": {
             "type": "string"
           },
+          "sss1": {
+            "type": "string"
+          },
           "name": {
             "type": "string"
           },
