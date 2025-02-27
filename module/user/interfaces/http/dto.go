@@ -44,6 +44,7 @@ type GetUserResponse struct {
 	WalletAddress   string  `json:"walletAddress"`
 	Email           string  `json:"email"`
 	Password        string  `json:"password"`
+	SSS1            string  `json:"sss1"`
 	Name            string  `json:"name"`
 	EmailVerifiedAt *uint64 `json:"emailVerifiedAt"`
 	CreatedAt       uint64  `json:"createdAt"`
