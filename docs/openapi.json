@@ -496,12 +496,9 @@
         }
       },
       "UpdateUserPasswordRequest": {
-        "required": ["currentPassword", "newPassword"],
+        "required": ["newPassword"],
         "type": "object",
         "properties": {
-          "currentPassword": {
-            "type": "string"
-          },
           "newPassword": {
             "type": "string"
           }

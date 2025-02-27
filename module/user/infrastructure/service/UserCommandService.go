@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"log"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/hashicorp/vault/shamir"
 	"github.com/segmentio/ksuid"
 
-	apiError "celeste/internal/errors"
 	"celeste/internal/password"
 	"celeste/module/user/domain/repository"
 	repositoryTypes "celeste/module/user/infrastructure/repository/types"
@@ -139,17 +137,6 @@ func (service *UserCommandService) UpdateUserEmailVerifiedAt(ctx context.Context
 
 // UpdateUserPassword update user password by address
 func (service *UserCommandService) UpdateUserPassword(ctx context.Context, data types.UpdateUserPassword) error {
-	// get user by wallet address
-	user, err := service.UserQueryRepositoryInterface.SelectUserByWalletAddress(data.WalletAddress)
-	if err != nil {
-		return err
-	}
-
-	// compare current password
-	if !password.CheckPasswordHash(data.CurrentPassword, user.Password) {
-		return errors.New(apiError.InvalidPassword)
-	}
-
 	hashedPassword, err := password.HashPassword(data.NewPassword)
 	if err != nil {
 		return err
