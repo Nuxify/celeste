@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
@@ -65,7 +66,7 @@ func (controller *UserCommandController) CreateUser(w http.ResponseWriter, r *ht
 	}
 
 	res, err := controller.UserCommandServiceInterface.CreateUser(context.TODO(), serviceTypes.CreateUser{
-		Email:    request.Email,
+		Email:    strings.ToLower(request.Email),
 		Password: request.Password,
 		Name:     request.Name,
 	})
