@@ -111,6 +111,55 @@ func (controller *UserCommandController) CreateUser(w http.ResponseWriter, r *ht
 	response.JSON(w)
 }
 
+// DeactivateUser request handler to deactivate user
+func (controller *UserCommandController) DeactivateUser(w http.ResponseWriter, r *http.Request) {
+	walletAddress := chi.URLParam(r, "walletAddress")
+	if len(walletAddress) == 0 {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Wallet address is required.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	err := controller.UserCommandServiceInterface.DeactivateUser(context.TODO(), walletAddress)
+	if err != nil {
+		var httpCode int
+		var errorMsg string
+
+		switch err.Error() {
+		case errors.DatabaseError:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Error occurred while updating user."
+		default:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Please contact technical support."
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    httpCode,
+			Success:   false,
+			Message:   errorMsg,
+			ErrorCode: err.Error(),
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	response := viewmodels.HTTPResponseVM{
+		Status:  http.StatusOK,
+		Success: true,
+		Message: "Successfully deactivated user.",
+	}
+
+	response.JSON(w)
+}
+
 // UpdateUserEmailVerifiedAt request handler to update user email verified at
 func (controller *UserCommandController) UpdateUserEmailVerifiedAt(w http.ResponseWriter, r *http.Request) {
 	var request types.UpdateUserEmailVerifiedAtRequest

@@ -19,6 +19,27 @@ type UserCommandRepository struct {
 	types.MySQLDBHandlerInterface
 }
 
+// DeactivateUser deactivates user
+func (repository *UserCommandRepository) DeactivateUser(data repositoryTypes.DeactivateUser) error {
+	user := &entity.User{
+		WalletAddress: data.WalletAddress,
+		Email:         data.Email,
+		Password:      data.Password,
+		SSS1:          data.SSS1,
+		Name:          data.Name,
+	}
+
+	// deactivate user
+	stmt := fmt.Sprintf("UPDATE %s SET email=:email, password=:password, sss_1=:sss_1, name=:name WHERE wallet_address=:wallet_address", user.GetModelName())
+	_, err := repository.MySQLDBHandlerInterface.Execute(stmt, user)
+	if err != nil {
+		log.Println(err)
+		return errors.New(apiError.DatabaseError)
+	}
+
+	return nil
+}
+
 // InsertUser creates a new user
 func (repository *UserCommandRepository) InsertUser(data repositoryTypes.CreateUser) error {
 	user := entity.User{

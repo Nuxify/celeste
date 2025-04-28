@@ -15,6 +15,33 @@ type UserCommandRepositoryCircuitBreaker struct {
 
 var config = hystrix_config.Config{}
 
+// DeactivateUser decorator pattern to deactivate user
+func (repository *UserCommandRepositoryCircuitBreaker) DeactivateUser(data repositoryTypes.DeactivateUser) error {
+	output := make(chan error, 1)
+	errChan := make(chan error, 1)
+
+	hystrix.ConfigureCommand("deactivate_user", config.Settings())
+	errors := hystrix.Go("deactivate_user", func() error {
+		err := repository.UserCommandRepositoryInterface.DeactivateUser(data)
+		if err != nil {
+			errChan <- err
+			return nil
+		}
+
+		output <- nil
+		return nil
+	}, nil)
+
+	select {
+	case out := <-output:
+		return out
+	case err := <-errChan:
+		return err
+	case err := <-errors:
+		return err
+	}
+}
+
 // InsertUser decorator pattern to insert user
 func (repository *UserCommandRepositoryCircuitBreaker) InsertUser(data repositoryTypes.CreateUser) error {
 	output := make(chan error, 1)

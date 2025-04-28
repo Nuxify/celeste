@@ -10,6 +10,8 @@ import (
 type UserCommandServiceInterface interface {
 	// CreateUser creates a new user
 	CreateUser(ctx context.Context, data types.CreateUser) (types.CreateUserResult, error)
+	// DeactivateUser deactivates user
+	DeactivateUser(ctx context.Context, walletAddress string) error
 	// UpdateUser updates user
 	UpdateUser(ctx context.Context, data types.UpdateUser) error
 	// UpdateUserEmailVerifiedAt updates user email verified at
