@@ -457,6 +457,56 @@
           }
         }
       }
+    },
+    "/user/{walletAddress}/deactivate": {
+      "patch": {
+        "tags": ["user"],
+        "summary": "Deactivate User By Wallet Address",
+        "description": "Deactivate user by wallet address",
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "path",
+            "description": "wallet address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

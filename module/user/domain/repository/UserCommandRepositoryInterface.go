@@ -6,6 +6,8 @@ import (
 
 // UserCommandRepositoryInterface holds the implementable methods for user command repository
 type UserCommandRepositoryInterface interface {
+	// DeactivateUser deactivates user
+	DeactivateUser(data types.DeactivateUser) error
 	// InsertUser inserts a new user
 	InsertUser(data types.CreateUser) error
 	// UpdateUser updates user

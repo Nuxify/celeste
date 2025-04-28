@@ -111,6 +111,22 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 	}, nil
 }
 
+// DeactivateUser deactivates user
+func (service *UserCommandService) DeactivateUser(ctx context.Context, walletAddress string) error {
+	err := service.UserCommandRepositoryInterface.DeactivateUser(repositoryTypes.DeactivateUser{
+		WalletAddress: walletAddress,
+		Email:         fmt.Sprintf("%s@deactivated.user", walletAddress),
+		Password:      "",
+		SSS1:          "",
+		Name:          "Deactivated User",
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // UpdateUser update user by address
 func (service *UserCommandService) UpdateUser(ctx context.Context, data types.UpdateUser) error {
 	err := service.UserCommandRepositoryInterface.UpdateUser(repositoryTypes.UpdateUser{

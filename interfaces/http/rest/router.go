@@ -91,6 +91,7 @@ func (router *router) InitRouter() *chi.Mux {
 				r.Put("/{walletAddress}/update", userCommandController.UpdateUserByWalletAddress)
 				r.Put("/email/verify", userCommandController.UpdateUserEmailVerifiedAt)
 				r.Put("/{walletAddress}/password/update", userCommandController.UpdateUserPassword)
+				r.Patch("/{walletAddress}/deactivate", userCommandController.DeactivateUser)
 			})
 		})
 	})
