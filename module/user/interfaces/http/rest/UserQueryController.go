@@ -68,6 +68,9 @@ func (controller *UserQueryController) GetUsers(w http.ResponseWriter, r *http.R
 		case errors.DatabaseError:
 			httpCode = http.StatusInternalServerError
 			errorMsg = "Database error."
+		case errors.MissingRecord:
+			httpCode = http.StatusNotFound
+			errorMsg = "No records found."
 		default:
 			httpCode = http.StatusInternalServerError
 			errorMsg = "Please contact technical support."
