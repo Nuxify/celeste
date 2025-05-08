@@ -157,6 +157,15 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
