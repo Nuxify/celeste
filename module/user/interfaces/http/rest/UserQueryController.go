@@ -52,7 +52,14 @@ func (controller *UserQueryController) GetUsers(w http.ResponseWriter, r *http.R
 		}
 	}
 
-	res, totalCount, err := controller.UserQueryServiceInterface.GetUsers(context.TODO(), uint(page))
+	// optional
+	var search *string
+	searchStr := r.URL.Query().Get("query")
+	if len(searchStr) > 0 {
+		search = &searchStr
+	}
+
+	res, totalCount, err := controller.UserQueryServiceInterface.GetUsers(context.TODO(), uint(page), search)
 	if err != nil {
 		var httpCode int
 		var errorMsg string
@@ -61,6 +68,9 @@ func (controller *UserQueryController) GetUsers(w http.ResponseWriter, r *http.R
 		case errors.DatabaseError:
 			httpCode = http.StatusInternalServerError
 			errorMsg = "Database error."
+		case errors.MissingRecord:
+			httpCode = http.StatusNotFound
+			errorMsg = "No records found."
 		default:
 			httpCode = http.StatusInternalServerError
 			errorMsg = "Please contact technical support."

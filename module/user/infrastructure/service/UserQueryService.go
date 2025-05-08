@@ -13,8 +13,8 @@ type UserQueryService struct {
 }
 
 // GetUsers get all users
-func (service *UserQueryService) GetUsers(ctx context.Context, page uint) ([]entity.User, uint, error) {
-	res, totalCount, err := service.UserQueryRepositoryInterface.SelectUsers(page)
+func (service *UserQueryService) GetUsers(ctx context.Context, page uint, search *string) ([]entity.User, uint, error) {
+	res, totalCount, err := service.UserQueryRepositoryInterface.SelectUsers(page, search)
 	if err != nil {
 		return []entity.User{}, 0, err
 	}
