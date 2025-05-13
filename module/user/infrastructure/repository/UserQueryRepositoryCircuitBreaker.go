@@ -13,7 +13,7 @@ type UserQueryRepositoryCircuitBreaker struct {
 }
 
 // SelectUsers is a decorator for the select users repository
-func (repository *UserQueryRepositoryCircuitBreaker) SelectUsers(page uint) ([]entity.User, uint, error) {
+func (repository *UserQueryRepositoryCircuitBreaker) SelectUsers(page uint, search *string) ([]entity.User, uint, error) {
 	type outputData struct {
 		Users      []entity.User
 		TotalCount uint
@@ -22,7 +22,7 @@ func (repository *UserQueryRepositoryCircuitBreaker) SelectUsers(page uint) ([]e
 	errChan := make(chan error, 1)
 	hystrix.ConfigureCommand("select_users", config.Settings())
 	errors := hystrix.Go("select_users", func() error {
-		users, totalCount, err := repository.UserQueryRepositoryInterface.SelectUsers(page)
+		users, totalCount, err := repository.UserQueryRepositoryInterface.SelectUsers(page, search)
 		if err != nil {
 			errChan <- err
 			return nil
