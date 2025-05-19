@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	apiError "celeste/internal/errors"
 	"celeste/module/user/domain/entity"
 	"celeste/module/user/domain/repository"
 )
@@ -13,9 +14,9 @@ type UserQueryService struct {
 }
 
 // GetUsers get all users
-func (service *UserQueryService) GetUsers(ctx context.Context, page uint) ([]entity.User, uint, error) {
-	res, totalCount, err := service.UserQueryRepositoryInterface.SelectUsers(page)
-	if err != nil {
+func (service *UserQueryService) GetUsers(ctx context.Context, page uint, search *string) ([]entity.User, uint, error) {
+	res, totalCount, err := service.UserQueryRepositoryInterface.SelectUsers(page, search)
+	if err != nil && err.Error() != apiError.MissingRecord {
 		return []entity.User{}, 0, err
 	}
 

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"celeste/infrastructures/database/mysql/types"
 	apiError "celeste/internal/errors"
@@ -16,11 +17,18 @@ type UserQueryRepository struct {
 }
 
 // SelectUsers select all users
-func (repository *UserQueryRepository) SelectUsers(page uint) ([]entity.User, uint, error) {
+func (repository *UserQueryRepository) SelectUsers(page uint, search *string) ([]entity.User, uint, error) {
 	var user entity.User
 	var users []entity.User
 
-	stmt := fmt.Sprintf("SELECT * FROM %s ORDER BY updated_at DESC", user.GetModelName())
+	stmt := fmt.Sprintf("SELECT * FROM %s", user.GetModelName())
+
+	// if search is set
+	if search != nil {
+		stmt = fmt.Sprintf("%s WHERE (name LIKE %s OR email LIKE %s)", stmt, "'%"+*search+"%'", "'%"+*search+"%'")
+	}
+
+	stmt = fmt.Sprintf("%s ORDER BY updated_at DESC", stmt)
 
 	// apply pagination
 	if page > 0 {
@@ -41,8 +49,9 @@ func (repository *UserQueryRepository) SelectUsers(page uint) ([]entity.User, ui
 	var counter struct {
 		Total uint `json:"total"`
 	}
-	stmt = fmt.Sprintf("SELECT COUNT(*) as total FROM %s", user.GetModelName())
-	err = repository.QueryRow(stmt, map[string]interface{}{}, &counter)
+	totalCountStmt := strings.ReplaceAll(stmt, "SELECT *", "SELECT COUNT(*) as total")
+
+	err = repository.QueryRow(totalCountStmt, map[string]interface{}{}, &counter)
 	if err != nil {
 		return []entity.User{}, 0, errors.New(apiError.DatabaseError)
 	}
