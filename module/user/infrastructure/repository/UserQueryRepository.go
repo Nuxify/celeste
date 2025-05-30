@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"celeste/infrastructures/database/mysql/types"
@@ -30,6 +31,18 @@ func (repository *UserQueryRepository) SelectUsers(page uint, search *string) ([
 
 	stmt = fmt.Sprintf("%s ORDER BY updated_at DESC", stmt)
 
+	// get total count
+	var counter struct {
+		Total uint `json:"total"`
+	}
+	totalCountStmt := strings.ReplaceAll(stmt, "SELECT *", "SELECT COUNT(*) as total")
+
+	err := repository.QueryRow(totalCountStmt, map[string]interface{}{}, &counter)
+	if err != nil {
+		log.Println(err)
+		return []entity.User{}, 0, errors.New(apiError.DatabaseError)
+	}
+
 	// apply pagination
 	if page > 0 {
 		var limit uint = 10
@@ -38,22 +51,12 @@ func (repository *UserQueryRepository) SelectUsers(page uint, search *string) ([
 		stmt = fmt.Sprintf("%s LIMIT %d OFFSET %d", stmt, limit, offset)
 	}
 
-	err := repository.Query(stmt, map[string]interface{}{}, &users)
+	err = repository.Query(stmt, map[string]interface{}{}, &users)
 	if err != nil {
+		log.Println(err)
 		return []entity.User{}, 0, errors.New(apiError.DatabaseError)
 	} else if len(users) == 0 {
 		return []entity.User{}, 0, errors.New(apiError.MissingRecord)
-	}
-
-	// get total count
-	var counter struct {
-		Total uint `json:"total"`
-	}
-	totalCountStmt := strings.ReplaceAll(stmt, "SELECT *", "SELECT COUNT(*) as total")
-
-	err = repository.QueryRow(totalCountStmt, map[string]interface{}{}, &counter)
-	if err != nil {
-		return []entity.User{}, 0, errors.New(apiError.DatabaseError)
 	}
 
 	return users, counter.Total, nil
@@ -72,6 +75,7 @@ func (repository *UserQueryRepository) SelectUserByWalletAddress(walletAddress s
 			return user, errors.New(apiError.MissingRecord)
 		}
 
+		log.Println(err)
 		return user, errors.New(apiError.DatabaseError)
 	}
 
@@ -91,6 +95,7 @@ func (repository *UserQueryRepository) SelectUserByEmail(email string) (entity.U
 			return user, errors.New(apiError.MissingRecord)
 		}
 
+		log.Println(err)
 		return user, errors.New(apiError.DatabaseError)
 	}
 
