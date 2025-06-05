@@ -93,6 +93,130 @@
         }
       }
     },
+    "/user/eip-191/sign":{
+      "post": {
+        "tags": ["user"],
+        "summary": "Sign EIP-191 Message",
+        "description": "Signs EIP-191 message",
+        "requestBody": {
+          "description": "Creates a eip-191 sign request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignEIP191Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SignEIP191RequestResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/eip-712/sign":{
+      "post": {
+        "tags": ["user"],
+        "summary": "Sign EIP-712 Message",
+        "description": "Signs EIP-712 message",
+        "requestBody": {
+          "description": "Creates a eip-712 sign request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignEIP712Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SignEIP712RequestResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user": {
       "get": {
         "tags": ["user"],
@@ -563,6 +687,42 @@
           }
         }
       },
+      "SignEIP191Request":{
+        "required":["sharekey","walletAddress", "message"],
+        "type": "object",
+        "properties": {
+          "sharekey": {
+            "type": "string",
+            "description": "Share key"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet Address"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message to be signed"
+          }
+        }
+      },
+      "SignEIP712Request":{
+        "required":["sharekey","walletAddress", "signerData"],
+        "type": "object",
+        "properties": {
+          "sharekey": {
+            "type": "string",
+            "description": "Share key"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet Address"
+          },
+          "signerData": {
+            "type": "object",
+            "description": "Signer data to be signed"
+          }
+        }
+      },
       "APIResponse": {
         "type": "object",
         "properties": {
@@ -642,6 +802,22 @@
           },
           "updatedAt": {
             "type": "integer"
+          }
+        }
+      },
+      "SignEIP191RequestResponse":{
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string"
+          }
+        }
+      },
+      "SignEIP712RequestResponse":{
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string"
           }
         }
       }
