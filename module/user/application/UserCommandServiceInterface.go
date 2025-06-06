@@ -12,6 +12,10 @@ type UserCommandServiceInterface interface {
 	CreateUser(ctx context.Context, data types.CreateUser) (types.CreateUserResult, error)
 	// DeactivateUser deactivates user
 	DeactivateUser(ctx context.Context, walletAddress string) error
+	// SignEIP191 signs a message using EIP-191
+	SignEIP191(ctx context.Context, data types.SignEIP191) (string, error)
+	// SignEIP712 signs a message using EIP-712
+	SignEIP712(ctx context.Context, data types.SignEIP712) (string, error)
 	// UpdateUser updates user
 	UpdateUser(ctx context.Context, data types.UpdateUser) error
 	// UpdateUserEmailVerifiedAt updates user email verified at

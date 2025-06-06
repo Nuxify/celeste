@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"log"
 
@@ -12,6 +13,10 @@ import (
 	"github.com/hashicorp/vault/shamir"
 	"github.com/segmentio/ksuid"
 
+	apiError "celeste/internal/errors"
+	"celeste/internal/ethereum/eip191"
+	"celeste/internal/ethereum/eip712"
+	shamirInternal "celeste/internal/ethereum/shamir"
 	"celeste/internal/password"
 	"celeste/module/user/domain/repository"
 	repositoryTypes "celeste/module/user/infrastructure/repository/types"
@@ -21,6 +26,7 @@ import (
 // UserCommandService handles the user command service logic
 type UserCommandService struct {
 	repository.UserCommandRepositoryInterface
+	repository.UserQueryRepositoryInterface
 }
 
 // CreateUser create a user
@@ -138,6 +144,62 @@ func (service *UserCommandService) UpdateUser(ctx context.Context, data types.Up
 	}
 
 	return nil
+}
+
+// SignEIP191 signs a message using EIP-191
+func (service *UserCommandService) SignEIP191(ctx context.Context, data types.SignEIP191) (string, error) {
+	// get user by wallet address
+	user, err := service.UserQueryRepositoryInterface.SelectUserByWalletAddress(data.WalletAddress)
+	if err != nil {
+		return "", err
+	}
+
+	// reconstruct private key
+	recoveredPrivateKey, _, err := shamirInternal.ReconstructPrivateKey(user.SSS1, data.ShareKey)
+	if err != nil {
+		return "", errors.New(apiError.EthInvalidUserPrivateKey)
+	}
+
+	// sign message
+	signature, err := eip191.SignPersonalMessage(recoveredPrivateKey, []byte(data.Message))
+	if err != nil {
+		return "", err
+	}
+
+	return signature, nil
+}
+
+// SignEIP712 signs a message using EIP-712
+func (service *UserCommandService) SignEIP712(ctx context.Context, data types.SignEIP712) (string, error) {
+	// reconstruct signer private key
+	user, err := service.SelectUserByWalletAddress(data.WalletAddress)
+	if err != nil {
+		return "", err
+	}
+
+	signerPrivateKey, _, err := shamirInternal.ReconstructPrivateKey(user.SSS1, data.ShareKey)
+	if err != nil {
+		return "", errors.New(apiError.EthInvalidUserPrivateKey)
+	}
+
+	recoveredPublicKey := signerPrivateKey.Public()
+	recoveredPublicKeyECDSA, ok := recoveredPublicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return "", errors.New(apiError.EthInvalidUserPublicKey)
+	}
+
+	if crypto.PubkeyToAddress(*recoveredPublicKeyECDSA).Hex() != user.WalletAddress {
+		return "", errors.New(apiError.UnauthorizedAccess)
+	}
+
+	// get signature
+	signature, err := eip712.SignTypedData(data.SignerData, signerPrivateKey)
+	if err != nil {
+		log.Println(err)
+		return "", errors.New(apiError.EthInvalidTypedDataSignature)
+	}
+
+	return signature, nil
 }
 
 // UpdateUserEmailVerifiedAt update user email verified at by address
