@@ -8,18 +8,20 @@ import (
 var (
 	Validate         *validator.Validate = validator.New(validator.WithRequiredStructEnabled())
 	ValidationErrors map[string]string   = map[string]string{
-		"CreateUserRequest.Email":                   "Email field is required.",
-		"CreateUserRequest.Password":                "Password field is required.",
-		"CreateUserRequest.Name":                    "Name field is required.",
-		"SignEIP191Request.ShareKey":                "ShareKey field is required.",
-		"SignEIP191Request.WalletAddress":           "WalletAddress field is required.",
-		"SignEIP191Request.Message":                 "Message field is required.",
-		"SignEIP712Request.ShareKey":                "ShareKey field is required.",
-		"SignEIP712Request.WalletAddress":           "WalletAddress field is required.",
-		"SignEIP712Request.SignerData":              "Signer data is required.",
-		"UpdateUserRequest.Name":                    "Name field is required.",
-		"UpdateUserPasswordRequest.CurrentPassword": "Current password field is required.",
-		"UpdateUserPasswordRequest.NewPassword":     "New password field is required.",
+		"CreateUserRequest.Email":                    "Email field is required.",
+		"CreateUserRequest.Password":                 "Password field is required.",
+		"CreateUserRequest.Name":                     "Name field is required.",
+		"ReconstructPrivateKeyRequest.ShareKey":      "ShareKey field is required.",
+		"ReconstructPrivateKeyRequest.WalletAddress": "WalletAddress field is required.",
+		"SignEIP191Request.ShareKey":                 "ShareKey field is required.",
+		"SignEIP191Request.WalletAddress":            "WalletAddress field is required.",
+		"SignEIP191Request.Message":                  "Message field is required.",
+		"SignEIP712Request.ShareKey":                 "ShareKey field is required.",
+		"SignEIP712Request.WalletAddress":            "WalletAddress field is required.",
+		"SignEIP712Request.SignerData":               "Signer data is required.",
+		"UpdateUserRequest.Name":                     "Name field is required.",
+		"UpdateUserPasswordRequest.CurrentPassword":  "Current password field is required.",
+		"UpdateUserPasswordRequest.NewPassword":      "New password field is required.",
 	}
 )
 
@@ -27,6 +29,11 @@ type CreateUserRequest struct {
 	Email    string `json:"email" validate:"required"`
 	Password string `json:"password" validate:"required"`
 	Name     string `json:"name" validate:"required"`
+}
+
+type ReconstructPrivateKeyRequest struct {
+	ShareKey      string `json:"shareKey" validate:"required"`
+	WalletAddress string `json:"walletAddress" validate:"required"`
 }
 
 type SignEIP191Request struct {
@@ -74,11 +81,15 @@ type GetPaginatedUserResponse struct {
 	Total uint              `json:"total"`
 }
 
-type SignEIP191RequestResponse struct {
+type ReconstructPrivateKeyResponse struct {
+	RecoveredPublicKey string `json:"recoveredPublicKey"`
+}
+
+type SignEIP191Response struct {
 	Signature string `json:"signature"`
 }
 
-type SignEIP712RequestResponse struct {
+type SignEIP712Response struct {
 	Signature string `json:"signature"`
 }
 

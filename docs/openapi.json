@@ -93,6 +93,68 @@
         }
       }
     },
+    "/user/private-key/reconstruct":{
+      "post": {
+        "tags": ["user"],
+        "summary": "Reconstruct Private Key",
+        "description": "Reconstructs private key",
+        "requestBody": {
+          "description": "Creates a reconstruct private key request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReconstructPrivateKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ReconstructPrivateKeyResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/eip-191/sign":{
       "post": {
         "tags": ["user"],
@@ -123,7 +185,7 @@
                       "type": "object",
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/SignEIP191RequestResponse"
+                          "$ref": "#/components/schemas/SignEIP191Response"
                         }
                       }
                     }
@@ -185,7 +247,7 @@
                       "type": "object",
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/SignEIP712RequestResponse"
+                          "$ref": "#/components/schemas/SignEIP712Response"
                         }
                       }
                     }
@@ -659,30 +721,25 @@
           }
         }
       },
+      "ReconstructPrivateKeyRequest":{
+        "required": ["sharekey", "walletAddress"],
+        "type": "object",
+        "properties": {
+          "sharekey": {
+            "type": "string",
+            "description": "Share key"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet Address"
+          }
+        }
+      },
       "UpdateUserRequest": {
         "required": ["name"],
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
-          }
-        }
-      },
-      "UpdateUserEmailVerifiedAtRequest": {
-        "required": ["email"],
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email"
-          }
-        }
-      },
-      "UpdateUserPasswordRequest": {
-        "required": ["password"],
-        "type": "object",
-        "properties": {
-          "password": {
             "type": "string"
           }
         }
@@ -720,6 +777,25 @@
           "signerData": {
             "type": "object",
             "description": "Signer data to be signed"
+          }
+        }
+      },
+      "UpdateUserEmailVerifiedAtRequest": {
+        "required": ["email"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "UpdateUserPasswordRequest": {
+        "required": ["password"],
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
           }
         }
       },
@@ -802,7 +878,15 @@
           }
         }
       },
-      "SignEIP191RequestResponse":{
+      "ReconstructPrivateKeyResponse":{
+        "type": "object",
+        "properties": {
+          "recoveredPublicKey": {
+            "type": "string"
+          }
+        }
+      },
+      "SignEIP191Response":{
         "type": "object",
         "properties": {
           "signature": {
@@ -810,7 +894,7 @@
           }
         }
       },
-      "SignEIP712RequestResponse":{
+      "SignEIP712Response":{
         "type": "object",
         "properties": {
           "signature": {
