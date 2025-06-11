@@ -293,7 +293,7 @@ func (controller *UserCommandController) ReconstructPrivateKey(w http.ResponseWr
 		return
 	}
 
-	recoveredPublicKey, err := controller.UserCommandServiceInterface.ReconstructPrivateKey(context.TODO(), serviceTypes.ReconstructPrivateKey{
+	res, err := controller.UserCommandServiceInterface.ReconstructPrivateKey(context.TODO(), serviceTypes.ReconstructPrivateKey{
 		ShareKey:      request.ShareKey,
 		WalletAddress: request.WalletAddress,
 	})
@@ -331,7 +331,7 @@ func (controller *UserCommandController) ReconstructPrivateKey(w http.ResponseWr
 		Success: true,
 		Message: "Successfully reconstructed the private key.",
 		Data: &types.ReconstructPrivateKeyResponse{
-			RecoveredPublicKey: recoveredPublicKey,
+			RecoveredPublicKey: res.PublicKeyToAddress,
 		},
 	}
 

@@ -45,7 +45,8 @@ type UpdateUserPassword struct {
 	Password      string
 }
 
-type RecoveredKey struct {
-	PrivateKey *ecdsa.PrivateKey
-	PublicKey  *ecdsa.PublicKey
+type ReconstructPrivateKeyResult struct {
+	PublicKeyToAddress string
+	PrivateKey         *ecdsa.PrivateKey
+	PublicKey          *ecdsa.PublicKey
 }

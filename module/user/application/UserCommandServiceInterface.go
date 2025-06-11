@@ -13,7 +13,7 @@ type UserCommandServiceInterface interface {
 	// DeactivateUser deactivates user
 	DeactivateUser(ctx context.Context, walletAddress string) error
 	// ReconstructPrivateKey reconstructs the private key
-	ReconstructPrivateKey(ctx context.Context, data types.ReconstructPrivateKey) (string, error)
+	ReconstructPrivateKey(ctx context.Context, data types.ReconstructPrivateKey) (types.ReconstructPrivateKeyResult, error)
 	// SignEIP191 signs a message using EIP-191
 	SignEIP191(ctx context.Context, data types.SignEIP191) (string, error)
 	// SignEIP712 signs a message using EIP-712

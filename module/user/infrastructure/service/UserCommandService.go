@@ -7,18 +7,19 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/shamir"
 	"github.com/segmentio/ksuid"
 
+	"celeste/internal/aes"
 	apiError "celeste/internal/errors"
 	"celeste/internal/ethereum/eip191"
 	"celeste/internal/ethereum/eip712"
 	shamirInternal "celeste/internal/ethereum/shamir"
 	"celeste/internal/password"
-	"celeste/module/user/domain/entity"
 	"celeste/module/user/domain/repository"
 	repositoryTypes "celeste/module/user/infrastructure/repository/types"
 	"celeste/module/user/infrastructure/service/types"
@@ -100,11 +101,17 @@ func (service *UserCommandService) CreateUser(ctx context.Context, data types.Cr
 		return types.CreateUserResult{}, err
 	}
 
+	// encrypt sss1
+	encryptedSSS1, err := aes.Encrypt(sss1, os.Getenv("ENCRYPTION_KEY"))
+	if err != nil {
+		return types.CreateUserResult{}, err
+	}
+
 	err = service.UserCommandRepositoryInterface.InsertUser(repositoryTypes.CreateUser{
 		WalletAddress: publicAddress,
 		Email:         data.Email,
 		Password:      hashedPassword,
-		SSS1:          sss1,
+		SSS1:          encryptedSSS1,
 		Name:          data.Name,
 	})
 	if err != nil {
@@ -135,26 +142,51 @@ func (service *UserCommandService) DeactivateUser(ctx context.Context, walletAdd
 }
 
 // ReconstructPrivateKey reconstructs the private key
-func (service *UserCommandService) ReconstructPrivateKey(ctx context.Context, data types.ReconstructPrivateKey) (string, error) {
-	// reconstruct sss private key
-	recoveredKey, _, err := service.recoverKey(data.WalletAddress, data.ShareKey)
+func (service *UserCommandService) ReconstructPrivateKey(ctx context.Context, data types.ReconstructPrivateKey) (types.ReconstructPrivateKeyResult, error) {
+	// get user by wallet address
+	user, err := service.SelectUserByWalletAddress(data.WalletAddress)
 	if err != nil {
-		return "", err
+		return types.ReconstructPrivateKeyResult{}, err
 	}
 
-	return crypto.PubkeyToAddress(*recoveredKey.PublicKey).Hex(), nil
+	// decrypt sss1
+	decryptedSSS1, err := aes.Decrypt(user.SSS1, os.Getenv("ENCRYPTION_KEY"))
+	if err != nil {
+		return types.ReconstructPrivateKeyResult{}, errors.New(apiError.EthInvalidUserPrivateKey)
+	}
+
+	// reconstruct signer private key
+	recoveredPrivateKey, _, err := shamirInternal.ReconstructPrivateKey(decryptedSSS1, data.ShareKey)
+	if err != nil {
+		return types.ReconstructPrivateKeyResult{}, errors.New(apiError.EthInvalidUserPrivateKey)
+	}
+
+	recoveredPublicKey := recoveredPrivateKey.Public()
+	recoveredPublicKeyECDSA, ok := recoveredPublicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return types.ReconstructPrivateKeyResult{}, errors.New(apiError.EthInvalidUserPublicKey)
+	}
+
+	if crypto.PubkeyToAddress(*recoveredPublicKeyECDSA).Hex() != user.WalletAddress {
+		return types.ReconstructPrivateKeyResult{}, errors.New(apiError.UnauthorizedAccess)
+	}
+
+	return types.ReconstructPrivateKeyResult{
+		PublicKeyToAddress: crypto.PubkeyToAddress(*recoveredPublicKeyECDSA).Hex(),
+		PrivateKey:         recoveredPrivateKey,
+		PublicKey:          recoveredPublicKeyECDSA,
+	}, nil
 }
 
 // SignEIP191 signs a message using EIP-191
 func (service *UserCommandService) SignEIP191(ctx context.Context, data types.SignEIP191) (string, error) {
 	// reconstruct sss private key
-	recoveredKey, user, err := service.recoverKey(data.WalletAddress, data.ShareKey)
+	recoveredKey, err := service.ReconstructPrivateKey(ctx, types.ReconstructPrivateKey{
+		ShareKey:      data.ShareKey,
+		WalletAddress: data.WalletAddress,
+	})
 	if err != nil {
 		return "", err
-	}
-
-	if crypto.PubkeyToAddress(*recoveredKey.PublicKey).Hex() != user.WalletAddress {
-		return "", errors.New(apiError.UnauthorizedAccess)
 	}
 
 	// sign message
@@ -169,13 +201,12 @@ func (service *UserCommandService) SignEIP191(ctx context.Context, data types.Si
 // SignEIP712 signs a message using EIP-712
 func (service *UserCommandService) SignEIP712(ctx context.Context, data types.SignEIP712) (string, error) {
 	// reconstruct signer private key
-	signerKey, user, err := service.recoverKey(data.WalletAddress, data.ShareKey)
+	signerKey, err := service.ReconstructPrivateKey(ctx, types.ReconstructPrivateKey{
+		ShareKey:      data.ShareKey,
+		WalletAddress: data.WalletAddress,
+	})
 	if err != nil {
-		return "", errors.New(apiError.EthInvalidUserPrivateKey)
-	}
-
-	if crypto.PubkeyToAddress(*signerKey.PublicKey).Hex() != user.WalletAddress {
-		return "", errors.New(apiError.UnauthorizedAccess)
+		return "", err
 	}
 
 	// get signature
@@ -232,29 +263,4 @@ func (service *UserCommandService) UpdateUserPassword(ctx context.Context, data 
 // generateID generates unique id
 func generateID() string {
 	return ksuid.New().String()
-}
-
-func (service *UserCommandService) recoverKey(walletAddress, shareKey string) (types.RecoveredKey, entity.User, error) {
-	// get user by wallet address
-	user, err := service.SelectUserByWalletAddress(walletAddress)
-	if err != nil {
-		return types.RecoveredKey{}, entity.User{}, err
-	}
-
-	// reconstruct signer private key
-	recoveredPrivateKey, _, err := shamirInternal.ReconstructPrivateKey(user.SSS1, shareKey)
-	if err != nil {
-		return types.RecoveredKey{}, entity.User{}, errors.New(apiError.EthInvalidUserPrivateKey)
-	}
-
-	recoveredPublicKey := recoveredPrivateKey.Public()
-	recoveredPublicKeyECDSA, ok := recoveredPublicKey.(*ecdsa.PublicKey)
-	if !ok {
-		return types.RecoveredKey{}, entity.User{}, errors.New(apiError.EthInvalidUserPublicKey)
-	}
-
-	return types.RecoveredKey{
-		PrivateKey: recoveredPrivateKey,
-		PublicKey:  recoveredPublicKeyECDSA,
-	}, user, nil
 }

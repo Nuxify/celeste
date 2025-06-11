@@ -49,4 +49,9 @@ const (
 	EthRPCFailed                     string = "ETH_RPC_FAILED"
 	EthTransactionNotMined           string = "ETH_TRANSACTION_NOT_MINED"
 	EthTransferNotApproved           string = "ETH_TRANSFER_NOT_APPROVED"
+
+	// AES-256-GCM related errors
+	AES256GCMInvalidKey       string = "AES256_GCM_INVALID_KEY"
+	AES256GCMEncryptionFailed string = "AES256_GCM_ENCRYPTION_FAILED"
+	AES256GCMDecryptionFailed string = "AES256_GCM_DECRYPTION_FAILED"
 )
