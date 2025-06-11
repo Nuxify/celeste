@@ -152,7 +152,7 @@ func (service *UserCommandService) ReconstructPrivateKey(ctx context.Context, da
 	// decrypt sss1
 	decryptedSSS1, err := aes.Decrypt(user.SSS1, os.Getenv("ENCRYPTION_KEY"))
 	if err != nil {
-		return types.ReconstructPrivateKeyResult{}, errors.New(apiError.EthInvalidUserPrivateKey)
+		return types.ReconstructPrivateKeyResult{}, err
 	}
 
 	// reconstruct signer private key
