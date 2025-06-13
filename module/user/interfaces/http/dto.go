@@ -82,7 +82,8 @@ type GetPaginatedUserResponse struct {
 }
 
 type ReconstructPrivateKeyResponse struct {
-	RecoveredPublicKey string `json:"recoveredPublicKey"`
+	PrivateKeyHex string `json:"privateKeyHex"`
+	PublicKeyHex  string `json:"publicKeyHex"`
 }
 
 type SignEIP191Response struct {

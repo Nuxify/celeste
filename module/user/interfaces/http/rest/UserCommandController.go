@@ -331,7 +331,8 @@ func (controller *UserCommandController) ReconstructPrivateKey(w http.ResponseWr
 		Success: true,
 		Message: "Successfully reconstructed the private key.",
 		Data: &types.ReconstructPrivateKeyResponse{
-			RecoveredPublicKey: res.PublicKeyToAddress,
+			PrivateKeyHex: res.PrivateKeyHexEncoded,
+			PublicKeyHex:  res.PublicKeyToAddress,
 		},
 	}
 

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -155,11 +156,15 @@ func (service *UserCommandService) ReconstructPrivateKey(ctx context.Context, da
 		return types.ReconstructPrivateKeyResult{}, err
 	}
 
-	// reconstruct signer private key
+	// reconstruct private key
 	recoveredPrivateKey, _, err := shamirInternal.ReconstructPrivateKey(decryptedSSS1, data.ShareKey)
 	if err != nil {
 		return types.ReconstructPrivateKeyResult{}, errors.New(apiError.EthInvalidUserPrivateKey)
 	}
+
+	// convert to encoded string
+	privateKeyBytes := crypto.FromECDSA(recoveredPrivateKey)
+	privateKeyHexEncoded := strings.TrimPrefix(hexutil.Encode(privateKeyBytes), "0x")
 
 	recoveredPublicKey := recoveredPrivateKey.Public()
 	recoveredPublicKeyECDSA, ok := recoveredPublicKey.(*ecdsa.PublicKey)
@@ -172,9 +177,10 @@ func (service *UserCommandService) ReconstructPrivateKey(ctx context.Context, da
 	}
 
 	return types.ReconstructPrivateKeyResult{
-		PublicKeyToAddress: crypto.PubkeyToAddress(*recoveredPublicKeyECDSA).Hex(),
-		PrivateKey:         recoveredPrivateKey,
-		PublicKey:          recoveredPublicKeyECDSA,
+		PublicKeyToAddress:   crypto.PubkeyToAddress(*recoveredPublicKeyECDSA).Hex(),
+		PrivateKeyHexEncoded: privateKeyHexEncoded,
+		PrivateKey:           recoveredPrivateKey,
+		PublicKey:            recoveredPublicKeyECDSA,
 	}, nil
 }
 

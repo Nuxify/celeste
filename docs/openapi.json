@@ -93,7 +93,7 @@
         }
       }
     },
-    "/user/private-key/reconstruct":{
+    "/user/private-key/reconstruct": {
       "post": {
         "tags": ["user"],
         "summary": "Reconstruct Private Key",
@@ -155,7 +155,7 @@
         }
       }
     },
-    "/user/eip-191/sign":{
+    "/user/eip-191/sign": {
       "post": {
         "tags": ["user"],
         "summary": "Sign EIP-191 Message",
@@ -217,7 +217,7 @@
         }
       }
     },
-    "/user/eip-712/sign":{
+    "/user/eip-712/sign": {
       "post": {
         "tags": ["user"],
         "summary": "Sign EIP-712 Message",
@@ -721,7 +721,7 @@
           }
         }
       },
-      "ReconstructPrivateKeyRequest":{
+      "ReconstructPrivateKeyRequest": {
         "required": ["sharekey", "walletAddress"],
         "type": "object",
         "properties": {
@@ -744,8 +744,8 @@
           }
         }
       },
-      "SignEIP191Request":{
-        "required":["sharekey","walletAddress", "message"],
+      "SignEIP191Request": {
+        "required": ["sharekey", "walletAddress", "message"],
         "type": "object",
         "properties": {
           "sharekey": {
@@ -762,8 +762,8 @@
           }
         }
       },
-      "SignEIP712Request":{
-        "required":["sharekey","walletAddress", "signerData"],
+      "SignEIP712Request": {
+        "required": ["sharekey", "walletAddress", "signerData"],
         "type": "object",
         "properties": {
           "sharekey": {
@@ -878,15 +878,18 @@
           }
         }
       },
-      "ReconstructPrivateKeyResponse":{
+      "ReconstructPrivateKeyResponse": {
         "type": "object",
         "properties": {
-          "recoveredPublicKey": {
+          "privateKeyHex": {
+            "type": "string"
+          },
+          "publicKeyHex": {
             "type": "string"
           }
         }
       },
-      "SignEIP191Response":{
+      "SignEIP191Response": {
         "type": "object",
         "properties": {
           "signature": {
@@ -894,7 +897,7 @@
           }
         }
       },
-      "SignEIP712Response":{
+      "SignEIP712Response": {
         "type": "object",
         "properties": {
           "signature": {
