@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 
@@ -155,6 +156,283 @@ func (controller *UserCommandController) DeactivateUser(w http.ResponseWriter, r
 		Status:  http.StatusOK,
 		Success: true,
 		Message: "Successfully deactivated user.",
+	}
+
+	response.JSON(w)
+}
+
+// SignEIP191 request handler to sign EIP-191 message
+func (controller *UserCommandController) SignEIP191(w http.ResponseWriter, r *http.Request) {
+	var request types.SignEIP191Request
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	// validate request
+	err := types.Validate.Struct(request)
+	if err != nil {
+		errors := err.(validator.ValidationErrors)
+		if len(errors) > 0 {
+			response := viewmodels.HTTPResponseVM{
+				Status:    http.StatusBadRequest,
+				Success:   false,
+				Message:   types.ValidationErrors[errors[0].StructNamespace()],
+				ErrorCode: apiError.InvalidPayload,
+			}
+
+			response.JSON(w)
+			return
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	signature, err := controller.UserCommandServiceInterface.SignEIP191(context.TODO(), serviceTypes.SignEIP191{
+		WalletAddress: request.WalletAddress,
+		Message:       request.Message,
+		ShareKey:      request.ShareKey,
+	})
+	if err != nil {
+		var httpCode int
+		var errorMsg string
+
+		switch err.Error() {
+		case errors.EthInvalidUserPrivateKey,
+			errors.EthInvalidUserPublicKey,
+			errors.UnauthorizedAccess:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Signer wallet error."
+		case errors.DatabaseError:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Error occurred while updating user email verified at."
+		default:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Please contact technical support."
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    httpCode,
+			Success:   false,
+			Message:   errorMsg,
+			ErrorCode: err.Error(),
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	response := viewmodels.HTTPResponseVM{
+		Status:  http.StatusOK,
+		Success: true,
+		Message: "Successfully updated user email verified at.",
+		Data: &types.SignEIP191Response{
+			Signature: signature,
+		},
+	}
+
+	response.JSON(w)
+}
+
+// ReconstructPrivateKey request handler to reconstruct private key
+func (controller *UserCommandController) ReconstructPrivateKey(w http.ResponseWriter, r *http.Request) {
+	var request types.ReconstructPrivateKeyRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	// validate request
+	err := types.Validate.Struct(request)
+	if err != nil {
+		errors := err.(validator.ValidationErrors)
+		if len(errors) > 0 {
+			response := viewmodels.HTTPResponseVM{
+				Status:    http.StatusBadRequest,
+				Success:   false,
+				Message:   types.ValidationErrors[errors[0].StructNamespace()],
+				ErrorCode: apiError.InvalidPayload,
+			}
+
+			response.JSON(w)
+			return
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	res, err := controller.UserCommandServiceInterface.ReconstructPrivateKey(context.TODO(), serviceTypes.ReconstructPrivateKey{
+		ShareKey:      request.ShareKey,
+		WalletAddress: request.WalletAddress,
+	})
+	if err != nil {
+		var httpCode int
+		var errorMsg string
+
+		switch err.Error() {
+		case errors.EthInvalidUserPrivateKey,
+			errors.EthInvalidUserPublicKey,
+			errors.UnauthorizedAccess:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Signer wallet error."
+		case errors.DatabaseError:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Error occurred while reconstructing the private key."
+		default:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Please contact technical support."
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    httpCode,
+			Success:   false,
+			Message:   errorMsg,
+			ErrorCode: err.Error(),
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	response := viewmodels.HTTPResponseVM{
+		Status:  http.StatusOK,
+		Success: true,
+		Message: "Successfully reconstructed the private key.",
+		Data: &types.ReconstructPrivateKeyResponse{
+			PrivateKeyHex: res.PrivateKeyHexEncoded,
+			PublicKeyHex:  res.PublicKeyToAddress,
+		},
+	}
+
+	response.JSON(w)
+}
+
+// SignEIP712 request handler to sign EIP-712 message
+func (controller *UserCommandController) SignEIP712(w http.ResponseWriter, r *http.Request) {
+	var request types.SignEIP712Request
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	// validate request
+	err := types.Validate.Struct(request)
+	if err != nil {
+		errors := err.(validator.ValidationErrors)
+		if len(errors) > 0 {
+			response := viewmodels.HTTPResponseVM{
+				Status:    http.StatusBadRequest,
+				Success:   false,
+				Message:   types.ValidationErrors[errors[0].StructNamespace()],
+				ErrorCode: apiError.InvalidPayload,
+			}
+
+			response.JSON(w)
+			return
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    http.StatusBadRequest,
+			Success:   false,
+			Message:   "Invalid payload request.",
+			ErrorCode: apiError.InvalidRequestPayload,
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	signature, err := controller.UserCommandServiceInterface.SignEIP712(context.TODO(), serviceTypes.SignEIP712{
+		WalletAddress: request.WalletAddress,
+		ShareKey:      request.ShareKey,
+		SignerData: apitypes.TypedData{
+			Types:       request.SignerData.Types,
+			PrimaryType: request.SignerData.PrimaryType,
+			Domain: apitypes.TypedDataDomain{
+				Name:              request.SignerData.Domain.Name,
+				Version:           request.SignerData.Domain.Version,
+				ChainId:           request.SignerData.Domain.ChainId,
+				VerifyingContract: request.SignerData.Domain.VerifyingContract,
+			},
+			Message: request.SignerData.Message,
+		},
+	})
+	if err != nil {
+		var httpCode int
+		var errorMsg string
+
+		switch err.Error() {
+		case errors.EthInvalidUserPrivateKey,
+			errors.EthInvalidUserPublicKey,
+			errors.UnauthorizedAccess:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Signer wallet error."
+		case errors.DatabaseError:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Error occurred while signing EIP-712 message."
+		default:
+			httpCode = http.StatusInternalServerError
+			errorMsg = "Please contact technical support."
+		}
+
+		response := viewmodels.HTTPResponseVM{
+			Status:    httpCode,
+			Success:   false,
+			Message:   errorMsg,
+			ErrorCode: err.Error(),
+		}
+
+		response.JSON(w)
+		return
+	}
+
+	response := viewmodels.HTTPResponseVM{
+		Status:  http.StatusOK,
+		Success: true,
+		Message: "Successfully signed EIP-712 message.",
+		Data: &types.SignEIP712Response{
+			Signature: signature,
+		},
 	}
 
 	response.JSON(w)

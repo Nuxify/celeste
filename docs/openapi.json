@@ -8,7 +8,7 @@
       "name": "Nuxify Inc.",
       "email": "hello@nuxify.tech"
     },
-    "version": "0.3.2"
+    "version": "0.3.3"
   },
   "servers": [
     {
@@ -62,6 +62,192 @@
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/CreateUserResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/private-key/reconstruct": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Reconstruct Private Key",
+        "description": "Reconstructs private key",
+        "requestBody": {
+          "description": "Creates a reconstruct private key request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReconstructPrivateKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ReconstructPrivateKeyResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/eip-191/sign": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Sign EIP-191 Message",
+        "description": "Signs EIP-191 message",
+        "requestBody": {
+          "description": "Creates a eip-191 sign request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignEIP191Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SignEIP191Response"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4xx": {
+            "description": "Client side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          },
+          "5xx": {
+            "description": "Server side errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/eip-712/sign": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Sign EIP-712 Message",
+        "description": "Signs EIP-712 message",
+        "requestBody": {
+          "description": "Creates a eip-712 sign request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignEIP712Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/APIResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SignEIP712Response"
                         }
                       }
                     }
@@ -535,12 +721,62 @@
           }
         }
       },
+      "ReconstructPrivateKeyRequest": {
+        "required": ["sharekey", "walletAddress"],
+        "type": "object",
+        "properties": {
+          "sharekey": {
+            "type": "string",
+            "description": "Share key"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet Address"
+          }
+        }
+      },
       "UpdateUserRequest": {
         "required": ["name"],
         "type": "object",
         "properties": {
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "SignEIP191Request": {
+        "required": ["sharekey", "walletAddress", "message"],
+        "type": "object",
+        "properties": {
+          "sharekey": {
+            "type": "string",
+            "description": "Share key"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet Address"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message to be signed"
+          }
+        }
+      },
+      "SignEIP712Request": {
+        "required": ["sharekey", "walletAddress", "signerData"],
+        "type": "object",
+        "properties": {
+          "sharekey": {
+            "type": "string",
+            "description": "Share key"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet Address"
+          },
+          "signerData": {
+            "type": "object",
+            "description": "Signer data to be signed"
           }
         }
       },
@@ -627,9 +863,6 @@
           "password": {
             "type": "string"
           },
-          "sss1": {
-            "type": "string"
-          },
           "name": {
             "type": "string"
           },
@@ -642,6 +875,33 @@
           },
           "updatedAt": {
             "type": "integer"
+          }
+        }
+      },
+      "ReconstructPrivateKeyResponse": {
+        "type": "object",
+        "properties": {
+          "privateKeyHex": {
+            "type": "string"
+          },
+          "publicKeyHex": {
+            "type": "string"
+          }
+        }
+      },
+      "SignEIP191Response": {
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string"
+          }
+        }
+      },
+      "SignEIP712Response": {
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string"
           }
         }
       }

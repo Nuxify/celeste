@@ -61,7 +61,7 @@ func (router *router) InitRouter() *chi.Mux {
 			Status:  http.StatusOK,
 			Success: true,
 			Message: "alive",
-			Data:    map[string]string{"version": "v0.3.2"},
+			Data:    map[string]string{"version": "v0.3.3"},
 		}
 
 		response.JSON(w)
@@ -85,6 +85,9 @@ func (router *router) InitRouter() *chi.Mux {
 			// user module
 			r.Route("/user", func(r chi.Router) {
 				r.Post("/add", userCommandController.CreateUser)
+				r.Post("/private-key/reconstruct", userCommandController.ReconstructPrivateKey)
+				r.Post("/eip-191/sign", userCommandController.SignEIP191)
+				r.Post("/eip-712/sign", userCommandController.SignEIP712)
 				r.Get("/", userQueryController.GetUserByEmail)
 				r.Get("/list", userQueryController.GetUsers)
 				r.Get("/{walletAddress}", userQueryController.GetUserByWalletAddress)
