@@ -24,9 +24,12 @@ func (repository *UserQueryRepository) SelectUsers(page uint, search *string) ([
 
 	stmt := fmt.Sprintf("SELECT * FROM %s", user.GetModelName())
 
+	conditions := map[string]interface{}{}
+
 	// if search is set
 	if search != nil {
-		stmt = fmt.Sprintf("%s WHERE (name LIKE %s OR email LIKE %s)", stmt, "'%"+*search+"%'", "'%"+*search+"%'")
+		stmt = fmt.Sprintf("%s WHERE (name LIKE :search OR email LIKE :search)", stmt)
+		conditions["search"] = "%" + *search + "%"
 	}
 
 	stmt = fmt.Sprintf("%s ORDER BY updated_at DESC", stmt)
@@ -37,7 +40,7 @@ func (repository *UserQueryRepository) SelectUsers(page uint, search *string) ([
 	}
 	totalCountStmt := strings.ReplaceAll(stmt, "SELECT *", "SELECT COUNT(*) as total")
 
-	err := repository.QueryRow(totalCountStmt, map[string]interface{}{}, &counter)
+	err := repository.QueryRow(totalCountStmt, conditions, &counter)
 	if err != nil {
 		log.Println(err)
 		return []entity.User{}, 0, errors.New(apiError.DatabaseError)
@@ -51,7 +54,7 @@ func (repository *UserQueryRepository) SelectUsers(page uint, search *string) ([
 		stmt = fmt.Sprintf("%s LIMIT %d OFFSET %d", stmt, limit, offset)
 	}
 
-	err = repository.Query(stmt, map[string]interface{}{}, &users)
+	err = repository.Query(stmt, conditions, &users)
 	if err != nil {
 		log.Println(err)
 		return []entity.User{}, 0, errors.New(apiError.DatabaseError)
