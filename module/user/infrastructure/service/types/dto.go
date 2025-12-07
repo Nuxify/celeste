@@ -1,5 +1,11 @@
 package types
 
+import (
+	"crypto/ecdsa"
+
+	"github.com/ethereum/go-ethereum/signer/core/apitypes"
+)
+
 type CreateUser struct {
 	Email    string
 	Password string
@@ -12,6 +18,23 @@ type CreateUserResult struct {
 	SSS3          string
 }
 
+type ReconstructPrivateKey struct {
+	ShareKey      string
+	WalletAddress string
+}
+
+type SignEIP191 struct {
+	ShareKey      string
+	WalletAddress string
+	Message       string
+}
+
+type SignEIP712 struct {
+	ShareKey      string
+	WalletAddress string
+	SignerData    apitypes.TypedData
+}
+
 type UpdateUser struct {
 	WalletAddress string
 	Name          string
@@ -20,4 +43,11 @@ type UpdateUser struct {
 type UpdateUserPassword struct {
 	WalletAddress string
 	Password      string
+}
+
+type ReconstructPrivateKeyResult struct {
+	PublicKeyToAddress   string
+	PrivateKeyHexEncoded string
+	PrivateKey           *ecdsa.PrivateKey
+	PublicKey            *ecdsa.PublicKey
 }
